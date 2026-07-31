@@ -1,0 +1,2135 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>大型企業財務健康儀表板</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --bg: #f5f7f9;
+      --surface: #ffffff;
+      --surface-2: #eef3f6;
+      --text: #17202a;
+      --muted: #596875;
+      --border: #d8e0e7;
+      --primary: #0f766e;
+      --primary-strong: #0b5f59;
+      --primary-soft: #d9f1ed;
+      --blue: #2563eb;
+      --green: #15835c;
+      --amber: #b86b00;
+      --rose: #c03546;
+      --violet: #6d5bd0;
+      --pink: #be3d82;
+      --danger: #b42318;
+      --danger-soft: #fde7e7;
+      --good-soft: #e5f5ed;
+      --warning-soft: #fff1d6;
+      --shadow: 0 14px 34px rgba(23, 32, 42, 0.08);
+      --series-a: #2563eb;
+      --series-b: #0f766e;
+      --series-c: #b86b00;
+      --series-d: #6d5bd0;
+      --series-e: #be3d82;
+      --font-size-base: 16px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      font-size: var(--font-size-base);
+    }
+
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans TC", "PingFang TC", "Microsoft JhengHei", Arial, sans-serif;
+      line-height: 1.5;
+    }
+
+    button,
+    input,
+    select {
+      font: inherit;
+    }
+
+    button,
+    .file-button {
+      min-height: 40px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      background: var(--surface);
+      color: var(--text);
+      padding: 8px 12px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      white-space: nowrap;
+    }
+
+    button:hover,
+    .file-button:hover {
+      border-color: var(--primary);
+    }
+
+    button.primary {
+      background: var(--primary);
+      border-color: var(--primary);
+      color: #ffffff;
+    }
+
+    button.primary:hover {
+      background: var(--primary-strong);
+      border-color: var(--primary-strong);
+    }
+
+    button.ghost {
+      background: transparent;
+    }
+
+    button.danger {
+      color: var(--danger);
+      border-color: #f0b9b4;
+      background: #fff7f7;
+    }
+
+    .file-button {
+      position: relative;
+      overflow: hidden;
+    }
+
+    .file-button input {
+      position: absolute;
+      inset: 0;
+      opacity: 0;
+      cursor: pointer;
+    }
+
+    .app-shell {
+      width: min(1440px, 100%);
+      margin: 0 auto;
+      padding: 24px;
+    }
+
+    .topbar {
+      display: flex;
+      justify-content: space-between;
+      gap: 24px;
+      align-items: flex-end;
+      padding: 12px 0 24px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .topbar h1 {
+      margin: 8px 0 6px;
+      font-size: 2rem;
+      line-height: 1.15;
+      letter-spacing: 0;
+    }
+
+    .topbar p {
+      margin: 0;
+      color: var(--muted);
+      max-width: 760px;
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      background: var(--surface);
+      color: var(--muted);
+      padding: 5px 10px;
+      font-size: 0.85rem;
+      font-weight: 500;
+    }
+
+    .actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      justify-content: flex-end;
+    }
+
+    .status-line {
+      margin: 14px 0 0;
+      min-height: 24px;
+      color: var(--muted);
+      font-size: 0.92rem;
+    }
+
+    .status-line.good {
+      color: var(--green);
+    }
+
+    .status-line.warn {
+      color: var(--amber);
+    }
+
+    .company-grid {
+      display: grid;
+      grid-template-columns: repeat(6, minmax(0, 1fr));
+      gap: 14px;
+      margin: 24px 0 16px;
+      align-items: end;
+    }
+
+    .field {
+      display: grid;
+      gap: 6px;
+    }
+
+    .field-wide {
+      grid-column: span 2;
+    }
+
+    label,
+    .field-label {
+      color: var(--muted);
+      font-size: 0.9rem;
+      font-weight: 500;
+    }
+
+    input,
+    select {
+      width: 100%;
+      min-height: 40px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      background: var(--surface);
+      color: var(--text);
+      padding: 8px 10px;
+    }
+
+    input:focus,
+    select:focus,
+    button:focus {
+      outline: 2px solid rgba(15, 118, 110, 0.25);
+      outline-offset: 2px;
+    }
+
+    .summary-grid {
+      display: grid;
+      grid-template-columns: repeat(6, minmax(140px, 1fr));
+      gap: 12px;
+      margin: 18px 0;
+    }
+
+    .metric-card,
+    .panel,
+    .chart-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      box-shadow: var(--shadow);
+    }
+
+    .metric-card {
+      min-height: 96px;
+      padding: 14px;
+      display: grid;
+      gap: 7px;
+      align-content: start;
+    }
+
+    .metric-card .label {
+      color: var(--muted);
+      font-size: 0.86rem;
+      font-weight: 500;
+    }
+
+    .metric-card .value {
+      font-size: 1.55rem;
+      line-height: 1.1;
+      font-weight: 500;
+      letter-spacing: 0;
+      overflow-wrap: anywhere;
+    }
+
+    .metric-card .sub {
+      color: var(--muted);
+      font-size: 0.84rem;
+    }
+
+    .metric-card.grade-a,
+    .metric-card.grade-b {
+      border-color: rgba(21, 131, 92, 0.35);
+      background: linear-gradient(0deg, rgba(229, 245, 237, 0.82), rgba(255, 255, 255, 0.92));
+    }
+
+    .metric-card.grade-c {
+      border-color: rgba(184, 107, 0, 0.35);
+      background: linear-gradient(0deg, rgba(255, 241, 214, 0.82), rgba(255, 255, 255, 0.92));
+    }
+
+    .metric-card.grade-d,
+    .metric-card.grade-f {
+      border-color: rgba(180, 35, 24, 0.28);
+      background: linear-gradient(0deg, rgba(253, 231, 231, 0.78), rgba(255, 255, 255, 0.92));
+    }
+
+    .workspace-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1.55fr) minmax(320px, 0.75fr);
+      gap: 16px;
+      align-items: start;
+      margin-top: 16px;
+    }
+
+    .panel {
+      padding: 18px;
+      margin-bottom: 16px;
+    }
+
+    .panel-header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 14px;
+      margin-bottom: 12px;
+    }
+
+    .panel-header h2,
+    .panel h2,
+    .panel h3 {
+      margin: 0;
+      line-height: 1.25;
+      letter-spacing: 0;
+    }
+
+    .panel-header p,
+    .panel > p {
+      margin: 5px 0 0;
+      color: var(--muted);
+    }
+
+    .table-wrap {
+      overflow-x: auto;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      background: var(--surface);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .data-table {
+      min-width: 1510px;
+    }
+
+    th,
+    td {
+      border-bottom: 1px solid var(--border);
+      padding: 8px;
+      text-align: right;
+      vertical-align: middle;
+      white-space: nowrap;
+    }
+
+    th {
+      position: sticky;
+      top: 0;
+      z-index: 2;
+      background: var(--surface-2);
+      color: var(--muted);
+      font-size: 0.82rem;
+      font-weight: 500;
+    }
+
+    th:first-child,
+    td:first-child {
+      position: sticky;
+      left: 0;
+      z-index: 3;
+      text-align: left;
+      background: var(--surface);
+      border-right: 1px solid var(--border);
+    }
+
+    th:first-child {
+      background: var(--surface-2);
+      z-index: 4;
+    }
+
+    tbody tr:hover td {
+      background: #fbfcfd;
+    }
+
+    .cell-input {
+      min-height: 34px;
+      width: 96px;
+      padding: 6px 7px;
+      text-align: right;
+      border-radius: 6px;
+      background: #fbfcfd;
+    }
+
+    .year-input {
+      width: 74px;
+      text-align: left;
+    }
+
+    .computed-cell {
+      min-width: 92px;
+      color: var(--text);
+      font-weight: 500;
+      background: #fbfcfd;
+    }
+
+    .row-actions {
+      text-align: center;
+    }
+
+    .icon-button {
+      min-height: 32px;
+      width: 34px;
+      padding: 4px;
+      border-radius: 8px;
+    }
+
+    .notice {
+      margin-top: 12px;
+      padding: 10px 12px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      background: var(--surface-2);
+      color: var(--muted);
+    }
+
+    .notice.warn {
+      color: var(--amber);
+      border-color: rgba(184, 107, 0, 0.35);
+      background: var(--warning-soft);
+    }
+
+    .notice.danger {
+      color: var(--danger);
+      border-color: rgba(180, 35, 24, 0.25);
+      background: var(--danger-soft);
+    }
+
+    .score-hero {
+      display: grid;
+      grid-template-columns: auto 1fr;
+      gap: 14px;
+      align-items: center;
+      margin: 6px 0 16px;
+      padding: 14px;
+      border-radius: 8px;
+      background: var(--surface-2);
+    }
+
+    .score-number {
+      width: 86px;
+      height: 86px;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      background: var(--primary);
+      color: #ffffff;
+      font-size: 1.6rem;
+      font-weight: 500;
+      letter-spacing: 0;
+    }
+
+    .grade-badge {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 44px;
+      border-radius: 999px;
+      padding: 4px 10px;
+      background: var(--primary-soft);
+      color: var(--primary-strong);
+      font-weight: 500;
+    }
+
+    .score-breakdown {
+      display: grid;
+      gap: 10px;
+    }
+
+    .score-row {
+      display: grid;
+      grid-template-columns: minmax(90px, 1fr) 80px;
+      gap: 10px;
+      align-items: center;
+    }
+
+    .score-row small {
+      color: var(--muted);
+      display: block;
+      margin-top: 2px;
+    }
+
+    .score-points {
+      text-align: right;
+      font-variant-numeric: tabular-nums;
+      color: var(--muted);
+    }
+
+    .bar {
+      grid-column: 1 / -1;
+      height: 8px;
+      border-radius: 999px;
+      background: var(--surface-2);
+      overflow: hidden;
+    }
+
+    .bar span {
+      display: block;
+      height: 100%;
+      width: var(--bar-width);
+      background: var(--primary);
+      border-radius: inherit;
+    }
+
+    .charts-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .chart-card {
+      padding: 12px;
+      min-height: 250px;
+      box-shadow: none;
+    }
+
+    .chart-card h3 {
+      margin: 0 0 8px;
+      font-size: 1rem;
+      font-weight: 500;
+    }
+
+    .chart-card svg {
+      width: 100%;
+      height: auto;
+      display: block;
+    }
+
+    .chart-empty {
+      display: grid;
+      min-height: 190px;
+      place-items: center;
+      color: var(--muted);
+      border-radius: 8px;
+      background: var(--surface-2);
+    }
+
+    .sankey-layout {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(280px, 340px);
+      gap: 16px;
+      align-items: start;
+    }
+
+    .sankey-canvas {
+      min-height: 360px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      background: #fbfcfd;
+      padding: 10px;
+    }
+
+    #sankeySvg {
+      display: block;
+      width: 100%;
+      height: auto;
+      min-height: 330px;
+    }
+
+    .allocation-panel {
+      display: grid;
+      gap: 12px;
+      padding: 14px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      background: var(--surface);
+    }
+
+    .allocation-panel h3 {
+      font-size: 1rem;
+    }
+
+    .allocation-summary {
+      display: grid;
+      gap: 7px;
+      color: var(--muted);
+      font-size: 0.92rem;
+    }
+
+    .allocation-summary strong {
+      color: var(--text);
+      font-weight: 500;
+    }
+
+    details {
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      background: var(--surface);
+      padding: 0;
+    }
+
+    summary {
+      cursor: pointer;
+      padding: 13px 14px;
+      font-weight: 500;
+      color: var(--text);
+    }
+
+    .rules-table {
+      min-width: 760px;
+    }
+
+    .rules-wrap {
+      padding: 0 14px 14px;
+      overflow-x: auto;
+    }
+
+    .usage {
+      margin: 8px 0 4px;
+      color: var(--muted);
+    }
+
+    .usage h2 {
+      color: var(--text);
+      margin: 0 0 8px;
+      font-size: 1.1rem;
+    }
+
+    .usage ol {
+      margin: 8px 0 0;
+      padding-left: 22px;
+    }
+
+    code {
+      color: var(--primary-strong);
+      background: var(--primary-soft);
+      border-radius: 5px;
+      padding: 2px 5px;
+      overflow-wrap: anywhere;
+    }
+
+    .footer-note {
+      margin: 18px 0 0;
+      color: var(--muted);
+      font-size: 0.9rem;
+    }
+
+    @media (max-width: 1120px) {
+      .summary-grid {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
+
+      .workspace-grid,
+      .sankey-layout {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 760px) {
+      .app-shell {
+        padding: 16px;
+      }
+
+      .topbar {
+        align-items: stretch;
+      }
+
+      .topbar,
+      .actions {
+        flex-direction: column;
+      }
+
+      .actions {
+        justify-content: stretch;
+      }
+
+      .actions button,
+      .actions .file-button {
+        width: 100%;
+      }
+
+      .topbar h1 {
+        font-size: 1.6rem;
+      }
+
+      .company-grid,
+      .summary-grid,
+      .charts-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .panel-header {
+        flex-direction: column;
+      }
+
+      .score-hero {
+        grid-template-columns: 1fr;
+      }
+
+      .score-number {
+        width: 74px;
+        height: 74px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="app-shell">
+    <header class="topbar">
+      <div>
+        <span class="eyebrow">預載公開財報資料，非即時市場數據</span>
+        <h1>大型企業財務健康儀表板</h1>
+        <p>用十年以上現金流與資本配置資料，快速檢查一家大型企業的品質、自由現金流趨勢與資金去向。</p>
+      </div>
+      <div class="actions" aria-label="資料操作">
+        <button type="button" id="loadDemoButton" class="ghost">載入示範資料</button>
+        <button type="button" id="saveLocalButton" class="primary">儲存本機</button>
+        <button type="button" id="exportJsonButton">匯出 JSON</button>
+        <button type="button" id="downloadCsvTemplateButton">CSV 範本</button>
+        <label class="file-button" for="csvInput">
+          匯入 CSV
+          <input id="csvInput" type="file" accept=".csv,text/csv">
+        </label>
+      </div>
+    </header>
+
+    <div id="statusLine" class="status-line" role="status" aria-live="polite"></div>
+
+    <main>
+      <section class="company-grid" aria-label="公司基本資訊">
+        <div class="field">
+          <label for="companyPresetSelect">預載公司</label>
+          <select id="companyPresetSelect"></select>
+        </div>
+        <div class="field">
+          <label for="companyName">公司名稱</label>
+          <input id="companyName" type="text" autocomplete="off">
+        </div>
+        <div class="field">
+          <label for="ticker">股票代號</label>
+          <input id="ticker" type="text" autocomplete="off">
+        </div>
+        <div class="field">
+          <label for="unit">資料單位</label>
+          <input id="unit" type="text" autocomplete="off" placeholder="例如：百萬美元、億元新台幣">
+        </div>
+        <div class="field field-wide">
+          <label for="dataNote">資料註記</label>
+          <input id="dataNote" type="text" autocomplete="off">
+        </div>
+      </section>
+
+      <section id="summaryCards" class="summary-grid" aria-label="核心指標摘要"></section>
+
+      <section class="workspace-grid">
+        <div class="panel">
+          <div class="panel-header">
+            <div>
+              <h2>年度財務資料</h2>
+              <p>CAPEX 請以正數填入，FCF 與 FCF Margin 會自動計算。</p>
+            </div>
+            <button type="button" id="addYearButton">新增年度</button>
+          </div>
+
+          <div class="table-wrap">
+            <table class="data-table" aria-label="年度財務資料表">
+              <thead>
+                <tr>
+                  <th>Year</th>
+                  <th>Revenue</th>
+                  <th>Net Income</th>
+                  <th>OCF</th>
+                  <th>CAPEX</th>
+                  <th>FCF 自動</th>
+                  <th>FCF Margin</th>
+                  <th>Operating Margin %</th>
+                  <th>ROIC %</th>
+                  <th>Debt</th>
+                  <th>Shares Outstanding</th>
+                  <th>EPS</th>
+                  <th>Dividend</th>
+                  <th>Buyback</th>
+                  <th>Debt Reduction</th>
+                  <th>刪除</th>
+                </tr>
+              </thead>
+              <tbody id="financialTableBody"></tbody>
+            </table>
+          </div>
+          <div id="dataNotice" class="notice"></div>
+        </div>
+
+        <aside class="panel" aria-label="企業品質評分">
+          <div class="panel-header">
+            <div>
+              <h2>企業品質評分</h2>
+              <p>0 到 100 分，依成長、現金流品質、報酬率、負債與股數趨勢計算。</p>
+            </div>
+          </div>
+          <div id="scoreHero" class="score-hero"></div>
+          <div id="scoreBreakdown" class="score-breakdown"></div>
+        </aside>
+      </section>
+
+      <section class="panel" aria-label="十年趨勢折線圖">
+        <div class="panel-header">
+          <div>
+            <h2>十年趨勢折線圖</h2>
+            <p>每張圖使用自己的比例尺，避免股數與金額混在一起失真。</p>
+          </div>
+        </div>
+        <div id="chartsGrid" class="charts-grid"></div>
+      </section>
+
+      <section class="panel" aria-label="自由現金流河流圖">
+        <div class="panel-header">
+          <div>
+            <h2>自由現金流河流圖</h2>
+            <p>以 Sankey 寬度呈現 OCF、CAPEX、FCF 與資本配置的相對金額。</p>
+          </div>
+          <div class="field">
+            <label for="sankeyYear">選擇年度</label>
+            <select id="sankeyYear"></select>
+          </div>
+        </div>
+
+        <div class="sankey-layout">
+          <div class="sankey-canvas">
+            <svg id="sankeySvg" role="img" aria-label="自由現金流 Sankey 河流圖"></svg>
+          </div>
+
+          <div class="allocation-panel">
+            <h3>資本配置數據</h3>
+            <div class="field">
+              <label for="allocDividend">Dividend 股利</label>
+              <input id="allocDividend" type="number" step="0.01" inputmode="decimal">
+            </div>
+            <div class="field">
+              <label for="allocBuyback">Buyback 股票回購</label>
+              <input id="allocBuyback" type="number" step="0.01" inputmode="decimal">
+            </div>
+            <div class="field">
+              <label for="allocDebtReduction">Debt Reduction 還債</label>
+              <input id="allocDebtReduction" type="number" step="0.01" inputmode="decimal">
+            </div>
+            <div id="allocationSummary" class="allocation-summary"></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="panel" aria-label="評分規則">
+        <details open>
+          <summary>評分規則與本次得分</summary>
+          <div id="rulesWrap" class="rules-wrap"></div>
+        </details>
+      </section>
+
+      <section class="panel usage" aria-label="使用說明">
+        <h2>簡短使用說明</h2>
+        <ol>
+          <li>先確認公司名稱、股票代號與資料單位，再於年度表格輸入至少 10 年資料。</li>
+          <li>FCF 會用 <code>Operating Cash Flow - CAPEX</code> 自動計算；FCF Margin、CAGR、負債覆蓋年數與評分會即時更新。</li>
+          <li>CSV 欄位可使用 <code>year,revenue,netIncome,ocf,capex,operatingMargin,roic,debt,shares,eps,dividend,buyback,debtReduction</code>。</li>
+          <li>按「儲存本機」會寫入這台電腦的瀏覽器儲存空間；「匯出 JSON」可留下可攜備份。</li>
+        </ol>
+        <p class="footer-note">此工具只做財務資料整理與視覺化，不構成投資建議。預載公司為公開財報與財經網站整理的歷史資料；示範資料為虛構公司資料，皆非即時市場數據。</p>
+      </section>
+    </main>
+  </div>
+
+  <script>
+    const STORAGE_KEY = "large-company-financial-health-dashboard-v1";
+
+    const fieldConfig = [
+      ["revenue", "Revenue"],
+      ["netIncome", "Net Income"],
+      ["ocf", "Operating Cash Flow"],
+      ["capex", "CAPEX"],
+      ["operatingMargin", "Operating Margin"],
+      ["roic", "ROIC"],
+      ["debt", "Debt"],
+      ["shares", "Shares Outstanding"],
+      ["eps", "EPS"],
+      ["dividend", "Dividend"],
+      ["buyback", "Buyback"],
+      ["debtReduction", "Debt Reduction"]
+    ];
+
+    const PRESET_DEMO_KEY = "demo";
+    const PRESET_CUSTOM_KEY = "custom";
+    const COMPANY_PRESETS = [{"key":"aapl","company":{"name":"Apple","ticker":"AAPL","unit":"百萬美元","note":"預載資料：SEC EDGAR XBRL CompanyFacts；ROIC 為本工具用 NOPAT / invested capital 估算。 Shares/EPS 已做股票分割基準調整，方便十年股數趨勢比較。"},"rows":[{"id":"p-2016","year":2016,"revenue":215639,"netIncome":45687,"ocf":66231,"capex":12734,"operatingMargin":27.84,"roic":22.94,"debt":87032,"shares":22001.12,"eps":2.08,"dividend":11965,"buyback":29722,"debtReduction":2500,"fcf":53497},{"id":"p-2017","year":2017,"revenue":229234,"netIncome":48351,"ocf":64225,"capex":12451,"operatingMargin":26.76,"roic":20.17,"debt":115680,"shares":21006.76,"eps":2.3,"dividend":12563,"buyback":32900,"debtReduction":3500,"fcf":51774},{"id":"p-2018","year":2018,"revenue":265595,"netIncome":59531,"ocf":77434,"capex":13313,"operatingMargin":26.69,"roic":29.58,"debt":114483,"shares":20000.44,"eps":2.98,"dividend":13712,"buyback":72738,"debtReduction":6500,"fcf":64121},{"id":"p-2019","year":2019,"revenue":260174,"netIncome":55256,"ocf":69391,"capex":10495,"operatingMargin":24.57,"roic":35.9,"debt":108047,"shares":18595.65,"eps":2.97,"dividend":14119,"buyback":66897,"debtReduction":8805,"fcf":58896},{"id":"p-2020","year":2020,"revenue":274515,"netIncome":57411,"ocf":80674,"capex":7309,"operatingMargin":24.15,"roic":40.4,"debt":113097,"shares":17528.21,"eps":3.28,"dividend":14081,"buyback":72358,"debtReduction":12629,"fcf":73365},{"id":"p-2021","year":2021,"revenue":365817,"netIncome":94680,"ocf":104038,"capex":11085,"operatingMargin":29.78,"roic":61.45,"debt":125567,"shares":16864.92,"eps":5.61,"dividend":14467,"buyback":85971,"debtReduction":8750,"fcf":92953},{"id":"p-2022","year":2022,"revenue":394328,"netIncome":99803,"ocf":122151,"capex":10708,"operatingMargin":30.29,"roic":67.61,"debt":121010,"shares":16325.82,"eps":6.11,"dividend":14841,"buyback":89402,"debtReduction":9543,"fcf":111443},{"id":"p-2023","year":2023,"revenue":383285,"netIncome":96995,"ocf":110543,"capex":10959,"operatingMargin":29.82,"roic":67.55,"debt":112112,"shares":15812.55,"eps":6.13,"dividend":15025,"buyback":77550,"debtReduction":11151,"fcf":99584},{"id":"p-2024","year":2024,"revenue":391035,"netIncome":93736,"ocf":118254,"capex":9447,"operatingMargin":31.51,"roic":69.52,"debt":107525,"shares":15408.09,"eps":6.08,"dividend":15234,"buyback":94949,"debtReduction":9958,"fcf":108807},{"id":"p-2025","year":2025,"revenue":416161,"netIncome":112010,"ocf":111482,"capex":12715,"operatingMargin":31.97,"roic":81.55,"debt":99887,"shares":15004.7,"eps":7.46,"dividend":15421,"buyback":90711,"debtReduction":10932,"fcf":98767}]},{"key":"msft","company":{"name":"Microsoft","ticker":"MSFT","unit":"百萬美元","note":"預載資料：SEC EDGAR XBRL CompanyFacts；ROIC 為本工具用 NOPAT / invested capital 估算。"},"rows":[{"id":"p-2017","year":2017,"revenue":96571,"netIncome":25489,"ocf":39507,"capex":8129,"operatingMargin":30.06,"roic":14.11,"debt":95294,"shares":7832,"eps":3.25,"dividend":11845,"buyback":11788,"debtReduction":0,"fcf":31378},{"id":"p-2018","year":2018,"revenue":110360,"netIncome":16571,"ocf":43884,"capex":11632,"operatingMargin":31.77,"roic":15.5,"debt":76240,"shares":7794,"eps":2.13,"dividend":12699,"buyback":10721,"debtReduction":0,"fcf":32252},{"id":"p-2019","year":2019,"revenue":125843,"netIncome":39240,"ocf":52185,"capex":13925,"operatingMargin":34.14,"roic":23.65,"debt":72178,"shares":7753,"eps":5.06,"dividend":13811,"buyback":19543,"debtReduction":0,"fcf":38260},{"id":"p-2020","year":2020,"revenue":143015,"netIncome":44281,"ocf":60675,"capex":15441,"operatingMargin":37.03,"roic":26.31,"debt":63327,"shares":7683,"eps":5.76,"dividend":15137,"buyback":22968,"debtReduction":0,"fcf":45234},{"id":"p-2021","year":2021,"revenue":168088,"netIncome":61271,"ocf":76740,"capex":20622,"operatingMargin":41.59,"roic":32.41,"debt":58146,"shares":7608,"eps":8.05,"dividend":16521,"buyback":27385,"debtReduction":0,"fcf":56118},{"id":"p-2022","year":2022,"revenue":198270,"netIncome":72738,"ocf":89035,"capex":23886,"operatingMargin":42.06,"roic":35.8,"debt":49781,"shares":7540,"eps":9.65,"dividend":18135,"buyback":32696,"debtReduction":0,"fcf":65149},{"id":"p-2023","year":2023,"revenue":211915,"netIncome":72361,"ocf":87582,"capex":28107,"operatingMargin":41.77,"roic":32.79,"debt":47237,"shares":7472,"eps":9.68,"dividend":19800,"buyback":22245,"debtReduction":0,"fcf":59475},{"id":"p-2024","year":2024,"revenue":245122,"netIncome":88136,"ocf":118548,"capex":44477,"operatingMargin":44.64,"roic":29.65,"debt":51630,"shares":7469,"eps":11.8,"dividend":21771,"buyback":17254,"debtReduction":0,"fcf":74071},{"id":"p-2025","year":2025,"revenue":281724,"netIncome":101832,"ocf":136162,"capex":64551,"operatingMargin":45.62,"roic":29.71,"debt":43151,"shares":7465,"eps":13.64,"dividend":24082,"buyback":18420,"debtReduction":0,"fcf":71611},{"id":"p-2026","year":2026,"revenue":331839,"netIncome":133749,"ocf":182935,"capex":115948,"operatingMargin":46.78,"roic":27.1,"debt":40294,"shares":7453,"eps":17.95,"dividend":26445,"buyback":22271,"debtReduction":0,"fcf":66987}]},{"key":"googl","company":{"name":"Alphabet","ticker":"GOOGL","unit":"百萬美元","note":"預載資料：SEC EDGAR XBRL CompanyFacts；ROIC 為本工具用 NOPAT / invested capital 估算。 Shares/EPS 已做股票分割基準調整，方便十年股數趨勢比較。"},"rows":[{"id":"p-2016","year":2016,"revenue":90272,"netIncome":19478,"ocf":36036,"capex":10212,"operatingMargin":26.27,"roic":14.71,"debt":3935,"shares":13825.8,"eps":1.41,"dividend":0,"buyback":3693,"debtReduction":10064,"fcf":25824},{"id":"p-2017","year":2017,"revenue":110855,"netIncome":12662,"ocf":37091,"capex":13184,"operatingMargin":23.61,"roic":11.68,"debt":3943,"shares":13895.6,"eps":0.91,"dividend":0,"buyback":4846,"debtReduction":0,"fcf":23907},{"id":"p-2018","year":2018,"revenue":136819,"netIncome":30736,"ocf":47971,"capex":25139,"operatingMargin":20.12,"roic":14.7,"debt":3950,"shares":13911.2,"eps":2.21,"dividend":0,"buyback":9075,"debtReduction":0,"fcf":22832},{"id":"p-2019","year":2019,"revenue":161857,"netIncome":34343,"ocf":54520,"capex":23548,"operatingMargin":21.15,"roic":15.81,"debt":4758,"shares":13766.8,"eps":2.49,"dividend":0,"buyback":18396,"debtReduction":0,"fcf":30972},{"id":"p-2020","year":2020,"revenue":182527,"netIncome":40269,"ocf":65124,"capex":22281,"operatingMargin":22.59,"roic":17.51,"debt":1100,"shares":13504.4,"eps":2.98,"dividend":0,"buyback":31149,"debtReduction":0,"fcf":42843},{"id":"p-2021","year":2021,"revenue":257637,"netIncome":76033,"ocf":91652,"capex":24640,"operatingMargin":30.55,"roic":28.58,"debt":113,"shares":13242,"eps":5.61,"dividend":0,"buyback":50274,"debtReduction":0,"fcf":67012},{"id":"p-2022","year":2022,"revenue":282836,"netIncome":59972,"ocf":91495,"capex":31485,"operatingMargin":26.46,"roic":26.83,"debt":298,"shares":13159,"eps":4.56,"dividend":0,"buyback":59296,"debtReduction":0,"fcf":60010},{"id":"p-2023","year":2023,"revenue":307394,"netIncome":73795,"ocf":101746,"capex":32251,"operatingMargin":27.42,"roic":26.5,"debt":14536,"shares":12722,"eps":5.8,"dividend":0,"buyback":61504,"debtReduction":0,"fcf":69495},{"id":"p-2024","year":2024,"revenue":350018,"netIncome":100118,"ocf":125299,"capex":52535,"operatingMargin":32.11,"roic":29.58,"debt":15859,"shares":12447,"eps":8.04,"dividend":7363,"buyback":62222,"debtReduction":0,"fcf":72764},{"id":"p-2025","year":2025,"revenue":402836,"netIncome":132170,"ocf":164713,"capex":91447,"operatingMargin":32.03,"roic":24.65,"debt":51043,"shares":12230,"eps":10.81,"dividend":10049,"buyback":45709,"debtReduction":0,"fcf":73266}]},{"key":"amzn","company":{"name":"Amazon","ticker":"AMZN","unit":"百萬美元","note":"預載資料：SEC EDGAR XBRL CompanyFacts；ROIC 為本工具用 NOPAT / invested capital 估算。 Shares/EPS 已做股票分割基準調整，方便十年股數趨勢比較。"},"rows":[{"id":"p-2016","year":2016,"revenue":135987,"netIncome":2371,"ocf":17203,"capex":6737,"operatingMargin":3.08,"roic":31.27,"debt":8750,"shares":9680,"eps":0.24,"dividend":0,"buyback":0,"debtReduction":327,"fcf":10466},{"id":"p-2017","year":2017,"revenue":177866,"netIncome":3033,"ocf":18365,"capex":11955,"operatingMargin":2.31,"roic":10.23,"debt":24843,"shares":9860,"eps":0.31,"dividend":0,"buyback":0,"debtReduction":1301,"fcf":6410},{"id":"p-2018","year":2018,"revenue":232887,"netIncome":10073,"ocf":30723,"capex":13427,"operatingMargin":5.33,"roic":30.28,"debt":24866,"shares":10000,"eps":1.01,"dividend":0,"buyback":0,"debtReduction":155,"fcf":17296},{"id":"p-2019","year":2019,"revenue":280522,"netIncome":11588,"ocf":38514,"capex":16861,"operatingMargin":5.18,"roic":15.54,"debt":51698,"shares":10080,"eps":1.15,"dividend":0,"buyback":0,"debtReduction":1166,"fcf":21653},{"id":"p-2020","year":2020,"revenue":386064,"netIncome":21331,"ocf":66064,"capex":40140,"operatingMargin":5.93,"roic":17.92,"debt":61405,"shares":10198,"eps":2.09,"dividend":0,"buyback":0,"debtReduction":1553,"fcf":25924},{"id":"p-2021","year":2021,"revenue":469822,"netIncome":33364,"ocf":46327,"capex":61053,"operatingMargin":5.3,"roic":12.36,"debt":73988,"shares":10296,"eps":3.24,"dividend":0,"buyback":0,"debtReduction":1590,"fcf":-14726},{"id":"p-2022","year":2022,"revenue":513983,"netIncome":-2722,"ocf":46752,"capex":63645,"operatingMargin":2.38,"roic":5.64,"debt":85932,"shares":10189,"eps":-0.27,"dividend":0,"buyback":6000,"debtReduction":1258,"fcf":-16893},{"id":"p-2023","year":2023,"revenue":574785,"netIncome":30425,"ocf":84946,"capex":52729,"operatingMargin":6.41,"roic":14.39,"debt":79064,"shares":10492,"eps":2.9,"dividend":0,"buyback":0,"debtReduction":3676,"fcf":32217},{"id":"p-2024","year":2024,"revenue":637959,"netIncome":59248,"ocf":115877,"capex":82999,"operatingMargin":10.75,"roic":21.52,"debt":68393,"shares":10721,"eps":5.53,"dividend":0,"buyback":0,"debtReduction":9182,"fcf":32878},{"id":"p-2025","year":2025,"revenue":716924,"netIncome":77670,"ocf":139514,"capex":131819,"operatingMargin":11.16,"roic":15.84,"debt":81137,"shares":10827,"eps":7.17,"dividend":0,"buyback":0,"debtReduction":5021,"fcf":7695}]},{"key":"nvda","company":{"name":"NVIDIA","ticker":"NVDA","unit":"百萬美元","note":"預載資料：SEC EDGAR XBRL CompanyFacts；ROIC 為本工具用 NOPAT / invested capital 估算。 NVIDIA 2017-2021 CAPEX 以 MacroTrends 年度 FCF 搭配 SEC OCF 反推。 Shares/EPS 已做股票分割基準調整，方便十年股數趨勢比較。"},"rows":[{"id":"p-2017","year":2017,"revenue":6910,"netIncome":1666,"ocf":1672,"capex":169,"operatingMargin":27.99,"roic":42.33,"debt":0,"shares":25960,"eps":0.06,"dividend":261,"buyback":739,"debtReduction":0,"fcf":1503},{"id":"p-2018","year":2018,"revenue":9714,"netIncome":3047,"ocf":3502,"capex":591,"operatingMargin":33.05,"roic":88.22,"debt":0,"shares":25280,"eps":0.12,"dividend":341,"buyback":909,"debtReduction":0,"fcf":2911},{"id":"p-2019","year":2019,"revenue":11716,"netIncome":4141,"ocf":3743,"capex":600,"operatingMargin":32.47,"roic":44.44,"debt":0,"shares":25000,"eps":0.17,"dividend":371,"buyback":1579,"debtReduction":0,"fcf":3143},{"id":"p-2020","year":2020,"revenue":10918,"netIncome":2796,"ocf":4761,"capex":489,"operatingMargin":26.07,"roic":81.21,"debt":1991,"shares":24720,"eps":0.11,"dividend":390,"buyback":0,"debtReduction":0,"fcf":4272},{"id":"p-2021","year":2021,"revenue":16675,"netIncome":4332,"ocf":5822,"capex":1128,"operatingMargin":27.18,"roic":19.35,"debt":6963,"shares":25100,"eps":0.17,"dividend":395,"buyback":0,"debtReduction":0,"fcf":4694},{"id":"p-2022","year":2022,"revenue":26914,"netIncome":9752,"ocf":9108,"capex":976,"operatingMargin":37.31,"roic":27.69,"debt":10946,"shares":25350,"eps":0.38,"dividend":399,"buyback":0,"debtReduction":1000,"fcf":8132},{"id":"p-2023","year":2023,"revenue":26974,"netIncome":4368,"ocf":5641,"capex":1833,"operatingMargin":15.66,"roic":14.24,"debt":10953,"shares":25070,"eps":0.17,"dividend":398,"buyback":10039,"debtReduction":0,"fcf":3808},{"id":"p-2024","year":2024,"revenue":60922,"netIncome":29760,"ocf":28090,"capex":1069,"operatingMargin":54.12,"roic":63.9,"debt":9709,"shares":24940,"eps":1.19,"dividend":395,"buyback":9533,"debtReduction":1250,"fcf":27021},{"id":"p-2025","year":2025,"revenue":130497,"netIncome":72880,"ocf":64089,"capex":3236,"operatingMargin":62.42,"roic":89.2,"debt":8463,"shares":24804,"eps":2.94,"dividend":834,"buyback":33706,"debtReduction":1250,"fcf":60853},{"id":"p-2026","year":2026,"revenue":215938,"netIncome":120067,"ocf":102718,"capex":6042,"operatingMargin":60.38,"roic":71.33,"debt":8468,"shares":24514,"eps":4.9,"dividend":974,"buyback":40086,"debtReduction":0,"fcf":96676}]},{"key":"meta","company":{"name":"Meta Platforms","ticker":"META","unit":"百萬美元","note":"預載資料：SEC EDGAR XBRL CompanyFacts；ROIC 為本工具用 NOPAT / invested capital 估算。"},"rows":[{"id":"p-2016","year":2016,"revenue":27638,"netIncome":10217,"ocf":16108,"capex":4491,"operatingMargin":44.96,"roic":20.17,"debt":0,"shares":2925,"eps":3.49,"dividend":0,"buyback":0,"debtReduction":0,"fcf":11617},{"id":"p-2017","year":2017,"revenue":40653,"netIncome":15934,"ocf":24216,"capex":6733,"operatingMargin":49.7,"roic":23.59,"debt":0,"shares":2956,"eps":5.39,"dividend":0,"buyback":1976,"debtReduction":0,"fcf":17483},{"id":"p-2018","year":2018,"revenue":55838,"netIncome":22112,"ocf":29274,"capex":13915,"operatingMargin":44.62,"roic":29.15,"debt":418,"shares":2921,"eps":7.57,"dividend":0,"buyback":12879,"debtReduction":0,"fcf":15359},{"id":"p-2019","year":2019,"revenue":70697,"netIncome":18485,"ocf":36314,"capex":15102,"operatingMargin":33.93,"roic":21.78,"debt":55,"shares":2876,"eps":6.43,"dividend":0,"buyback":4202,"debtReduction":0,"fcf":21212},{"id":"p-2020","year":2020,"revenue":85965,"netIncome":29146,"ocf":38747,"capex":15163,"operatingMargin":38.01,"roic":25.8,"debt":523,"shares":2888,"eps":10.09,"dividend":0,"buyback":6272,"debtReduction":0,"fcf":23584},{"id":"p-2021","year":2021,"revenue":117929,"netIncome":39370,"ocf":57683,"capex":18690,"operatingMargin":39.65,"roic":35.76,"debt":581,"shares":2859,"eps":13.77,"dividend":0,"buyback":44537,"debtReduction":0,"fcf":38993},{"id":"p-2022","year":2022,"revenue":116609,"netIncome":23200,"ocf":50475,"capex":31186,"operatingMargin":24.82,"roic":19.16,"debt":10610,"shares":2702,"eps":8.59,"dividend":0,"buyback":27956,"debtReduction":0,"fcf":19289},{"id":"p-2023","year":2023,"revenue":134902,"netIncome":39098,"ocf":71113,"capex":27045,"operatingMargin":34.66,"roic":29.56,"debt":19075,"shares":2629,"eps":14.87,"dividend":0,"buyback":19774,"debtReduction":0,"fcf":44068},{"id":"p-2024","year":2024,"revenue":164501,"netIncome":62360,"ocf":91328,"capex":37256,"operatingMargin":42.18,"roic":36.38,"debt":29535,"shares":2614,"eps":23.86,"dividend":5072,"buyback":30125,"debtReduction":0,"fcf":54072},{"id":"p-2025","year":2025,"revenue":200966,"netIncome":60458,"ocf":115800,"capex":69691,"operatingMargin":41.44,"roic":24.28,"debt":59928,"shares":2574,"eps":23.49,"dividend":5324,"buyback":26248,"debtReduction":0,"fcf":46109}]},{"key":"tsla","company":{"name":"Tesla","ticker":"TSLA","unit":"百萬美元","note":"預載資料：SEC EDGAR XBRL CompanyFacts；ROIC 為本工具用 NOPAT / invested capital 估算。 Shares/EPS 已做股票分割基準調整，方便十年股數趨勢比較。"},"rows":[{"id":"p-2016","year":2016,"revenue":7000,"netIncome":-675,"ocf":-124,"capex":1281,"operatingMargin":-9.53,"roic":-40.24,"debt":0,"shares":2163.15,"eps":-0.31,"dividend":0,"buyback":0,"debtReduction":0,"fcf":-1405},{"id":"p-2017","year":2017,"revenue":11759,"netIncome":-1962,"ocf":-61,"capex":3415,"operatingMargin":-13.88,"roic":-153.95,"debt":0,"shares":2490,"eps":-0.79,"dividend":0,"buyback":0,"debtReduction":0,"fcf":-3476},{"id":"p-2018","year":2018,"revenue":21461,"netIncome":-976,"ocf":2098,"capex":2101,"operatingMargin":-1.81,"roic":-25.72,"debt":0,"shares":2559,"eps":-0.38,"dividend":0,"buyback":0,"debtReduction":0,"fcf":-3},{"id":"p-2019","year":2019,"revenue":24578,"netIncome":-862,"ocf":2405,"capex":1327,"operatingMargin":-0.28,"roic":-2.88,"debt":1618,"shares":2661,"eps":-0.32,"dividend":0,"buyback":0,"debtReduction":0,"fcf":1078},{"id":"p-2020","year":2020,"revenue":31536,"netIncome":721,"ocf":5943,"capex":3157,"operatingMargin":6.32,"roic":32.94,"debt":1468,"shares":3249,"eps":0.21,"dividend":0,"buyback":0,"debtReduction":0,"fcf":2786},{"id":"p-2021","year":2021,"revenue":53823,"netIncome":5519,"ocf":11497,"capex":6482,"operatingMargin":12.12,"roic":41.05,"debt":1492,"shares":3386,"eps":1.63,"dividend":0,"buyback":0,"debtReduction":14167,"fcf":5015},{"id":"p-2022","year":2022,"revenue":81462,"netIncome":12556,"ocf":14724,"capex":7158,"operatingMargin":16.76,"roic":42.46,"debt":1054,"shares":3475,"eps":3.62,"dividend":0,"buyback":0,"debtReduction":3364,"fcf":7566},{"id":"p-2023","year":2023,"revenue":96773,"netIncome":14997,"ocf":13256,"capex":8899,"operatingMargin":9.19,"roic":18.99,"debt":573,"shares":3485,"eps":4.3,"dividend":0,"buyback":0,"debtReduction":1351,"fcf":4357},{"id":"p-2024","year":2024,"revenue":97690,"netIncome":7091,"ocf":14923,"capex":11342,"operatingMargin":7.24,"roic":9.84,"debt":335,"shares":3498,"eps":2.04,"dividend":0,"buyback":0,"debtReduction":0,"fcf":3581},{"id":"p-2025","year":2025,"revenue":94827,"netIncome":3794,"ocf":14747,"capex":8527,"operatingMargin":4.59,"roic":4.81,"debt":223,"shares":3528,"eps":1.08,"dividend":0,"buyback":0,"debtReduction":0,"fcf":6220}]},{"key":"mu","company":{"name":"Micron Technology","ticker":"MU","unit":"百萬美元","note":"預載資料：SEC EDGAR XBRL CompanyFacts；ROIC 為本工具用 NOPAT / invested capital 估算。"},"rows":[{"id":"p-2016","year":2016,"revenue":12399,"netIncome":-276,"ocf":3168,"capex":5817,"operatingMargin":1.35,"roic":1.74,"debt":0,"shares":1036,"eps":-0.27,"dividend":0,"buyback":148,"debtReduction":0,"fcf":-2649},{"id":"p-2017","year":2017,"revenue":20322,"netIncome":5089,"ocf":8153,"capex":4734,"operatingMargin":28.88,"roic":42.48,"debt":0,"shares":1154,"eps":4.41,"dividend":0,"buyback":36,"debtReduction":0,"fcf":3419},{"id":"p-2018","year":2018,"revenue":30391,"netIncome":14135,"ocf":17400,"capex":8879,"operatingMargin":49.34,"roic":57.46,"debt":0,"shares":1229,"eps":11.51,"dividend":0,"buyback":71,"debtReduction":9420,"fcf":8521},{"id":"p-2019","year":2019,"revenue":23406,"netIncome":6313,"ocf":13189,"capex":9780,"operatingMargin":31.51,"roic":22.67,"debt":591,"shares":1143,"eps":5.51,"dividend":0,"buyback":2729,"debtReduction":2380,"fcf":3409},{"id":"p-2020","year":2020,"revenue":21435,"netIncome":2687,"ocf":8306,"capex":8223,"operatingMargin":14.01,"roic":8.54,"debt":486,"shares":1131,"eps":2.37,"dividend":0,"buyback":176,"debtReduction":3920,"fcf":83},{"id":"p-2021","year":2021,"revenue":27705,"netIncome":5861,"ocf":12468,"capex":10030,"operatingMargin":22.68,"roic":15.92,"debt":804,"shares":1141,"eps":5.14,"dividend":0,"buyback":1200,"debtReduction":0,"fcf":2438},{"id":"p-2022","year":2022,"revenue":30758,"netIncome":8687,"ocf":15181,"capex":12067,"operatingMargin":31.54,"roic":20.7,"debt":886,"shares":1122,"eps":7.75,"dividend":461,"buyback":2432,"debtReduction":0,"fcf":3114},{"id":"p-2023","year":2023,"revenue":15540,"netIncome":-5833,"ocf":1559,"capex":7676,"operatingMargin":-36.97,"roic":-12.79,"debt":1281,"shares":1093,"eps":-5.34,"dividend":504,"buyback":425,"debtReduction":0,"fcf":-6117},{"id":"p-2024","year":2024,"revenue":25111,"netIncome":778,"ocf":8507,"capex":8386,"operatingMargin":5.19,"roic":2.11,"debt":2054,"shares":1118,"eps":0.7,"dividend":513,"buyback":300,"debtReduction":0,"fcf":121},{"id":"p-2025","year":2025,"revenue":37378,"netIncome":8539,"ocf":17525,"capex":15857,"operatingMargin":26.14,"roic":18.15,"debt":3044,"shares":1125,"eps":7.59,"dividend":522,"buyback":0,"debtReduction":0,"fcf":1668}]},{"key":"tsm","company":{"name":"台積電 TSMC","ticker":"TSM / 2330","unit":"百萬新台幣","note":"預載資料：SEC EDGAR XBRL CompanyFacts 補長期歷史，StockAnalysis 補 2021-2025；ROIC 以 StockAnalysis/估算值呈現。"},"rows":[{"id":"p-2016","year":2016,"revenue":947938,"netIncome":331797,"ocf":539835,"capex":328045,"operatingMargin":39.87,"roic":46.17,"debt":0,"shares":25930.3,"eps":0,"dividend":155582,"buyback":0,"debtReduction":0,"fcf":211789},{"id":"p-2017","year":2017,"revenue":977447,"netIncome":345039,"ocf":585318,"capex":330588,"operatingMargin":39.45,"roic":40.92,"debt":0,"shares":25930.3,"eps":0,"dividend":181513,"buyback":0,"debtReduction":0,"fcf":254730},{"id":"p-2018","year":2018,"revenue":1031474,"netIncome":363106,"ocf":573954,"capex":315582,"operatingMargin":37.19,"roic":35.41,"debt":0,"shares":25930.3,"eps":0,"dividend":207443,"buyback":0,"debtReduction":0,"fcf":258372},{"id":"p-2019","year":2019,"revenue":1069985,"netIncome":354027,"ocf":615139,"capex":460422,"operatingMargin":34.83,"roic":31.68,"debt":17317,"shares":25930.3,"eps":0,"dividend":259304,"buyback":0,"debtReduction":0,"fcf":154716},{"id":"p-2020","year":2020,"revenue":1339255,"netIncome":511008,"ocf":822666,"capex":507239,"operatingMargin":42.32,"roic":47.31,"debt":22389,"shares":25930.3,"eps":0,"dividend":259304,"buyback":0,"debtReduction":0,"fcf":315427},{"id":"p-2021","year":2021,"revenue":1587415,"netIncome":592359,"ocf":1112161,"capex":839196,"operatingMargin":40.95,"roic":37.48,"debt":753632,"shares":25930.3,"eps":114.2,"dividend":0,"buyback":0,"debtReduction":0,"fcf":272965},{"id":"p-2022","year":2022,"revenue":2263891,"netIncome":992923,"ocf":1610599,"capex":1082672,"operatingMargin":49.53,"roic":49.68,"debt":888174,"shares":25929.2,"eps":191.45,"dividend":0,"buyback":0,"debtReduction":0,"fcf":527927},{"id":"p-2023","year":2023,"revenue":2161736,"netIncome":851740,"ocf":1241967,"capex":949817,"operatingMargin":42.63,"roic":32.59,"debt":956258,"shares":25929.2,"eps":164.25,"dividend":0,"buyback":0,"debtReduction":0,"fcf":292151},{"id":"p-2024","year":2024,"revenue":2894308,"netIncome":1158380,"ocf":1826177,"capex":956007,"operatingMargin":45.68,"roic":39.32,"debt":1047042,"shares":25927.6,"eps":223.35,"dividend":0,"buyback":0,"debtReduction":0,"fcf":870171},{"id":"p-2025","year":2025,"revenue":3809054,"netIncome":1697604,"ocf":2274976,"capex":1272411,"operatingMargin":50.83,"roic":52.08,"debt":1064583,"shares":25927.6,"eps":327.35,"dividend":0,"buyback":0,"debtReduction":0,"fcf":1002565}]},{"key":"samsung","company":{"name":"三星電子 Samsung Electronics","ticker":"005930.KR","unit":"百萬韓元","note":"預載資料：StockAnalysis 最近年度、DART/SEC 歷史年報補 2016-2020；早期 ROIC 未標準化者以 0 顯示。"},"rows":[{"id":"p-2016","year":2016,"revenue":201866745,"netIncome":22726092,"ocf":47385644,"capex":24142973,"operatingMargin":14.49,"roic":0,"debt":15282386,"shares":7194.08,"eps":3159,"dividend":3114742,"buyback":7707938,"debtReduction":252846,"fcf":23242671},{"id":"p-2017","year":2017,"revenue":239575376,"netIncome":42186747,"ocf":62162041,"capex":42792234,"operatingMargin":22.39,"roic":0,"debt":18814045,"shares":7034.64,"eps":5997,"dividend":6804297,"buyback":8350424,"debtReduction":1140803,"fcf":19369807},{"id":"p-2018","year":2018,"revenue":243771415,"netIncome":44344857,"ocf":67031863,"capex":29556406,"operatingMargin":24.16,"roic":0,"debt":14667103,"shares":6863.47,"eps":6461,"dividend":10193695,"buyback":875111,"debtReduction":1986597,"fcf":37475457},{"id":"p-2019","year":2019,"revenue":230400881,"netIncome":21738865,"ocf":45382915,"capex":25367756,"operatingMargin":12.05,"roic":0,"debt":18412037,"shares":6866.35,"eps":3166,"dividend":9639202,"buyback":0,"debtReduction":0,"fcf":20015159},{"id":"p-2020","year":2020,"revenue":236806988,"netIncome":26407832,"ocf":65287009,"capex":37592034,"operatingMargin":15.2,"roic":0,"debt":20217480,"shares":6875.25,"eps":3841,"dividend":9676760,"buyback":0,"debtReduction":0,"fcf":27694975},{"id":"p-2021","year":2021,"revenue":279604799,"netIncome":39243791,"ocf":65105448,"capex":47122106,"operatingMargin":18.47,"roic":20.84,"debt":18392149,"shares":6792.67,"eps":5777.37,"dividend":20510350,"buyback":0,"debtReduction":3511692,"fcf":17983342},{"id":"p-2022","year":2022,"revenue":302231360,"netIncome":54730018,"ocf":62181346,"capex":49430428,"operatingMargin":14.35,"roic":19.32,"debt":10333242,"shares":6792.67,"eps":8057.22,"dividend":9814426,"buyback":0,"debtReduction":9847614,"fcf":12750918},{"id":"p-2023","year":2023,"revenue":258935494,"netIncome":14473401,"ocf":44137427,"capex":57611292,"operatingMargin":2.54,"roic":2.46,"debt":12685944,"shares":6792.67,"eps":2130.74,"dividend":9864474,"buyback":0,"debtReduction":1219579,"fcf":-13473865},{"id":"p-2024","year":2024,"revenue":300870903,"netIncome":33621363,"ocf":72982621,"capex":51406355,"operatingMargin":10.88,"roic":10.13,"debt":19330184,"shares":6758.92,"eps":4949.75,"dividend":10888749,"buyback":1811775,"debtReduction":1364508,"fcf":21576266},{"id":"p-2025","year":2025,"revenue":333605938,"netIncome":44260956,"ocf":85315148,"capex":47522179,"operatingMargin":13.07,"roic":12.36,"debt":25239139,"shares":6630.18,"eps":6603.4,"dividend":9897183,"buyback":8189263,"debtReduction":2852971,"fcf":37792969}]},{"key":"skhynix","company":{"name":"SK 海力士 SK hynix","ticker":"SKHY / 000660.KR","unit":"百萬韓元","note":"預載資料：StockAnalysis 最近年度、DART/SEC 歷史年報補 2016-2020；早期 ROIC 未標準化者以 0 顯示。"},"rows":[{"id":"p-2016","year":2016,"revenue":17197975,"netIncome":2960483,"ocf":5548922,"capex":5956354,"operatingMargin":19.05,"roic":0,"debt":5794318,"shares":712,"eps":4158,"dividend":353001,"buyback":0,"debtReduction":1610466,"fcf":-407432},{"id":"p-2017","year":2017,"revenue":30109434,"netIncome":10642219,"ocf":14690614,"capex":9128303,"operatingMargin":45.57,"roic":0,"debt":3669928,"shares":711.24,"eps":14963,"dividend":423601,"buyback":0,"debtReduction":710635,"fcf":5562311},{"id":"p-2018","year":2018,"revenue":40445066,"netIncome":15539984,"ocf":22227199,"capex":16036146,"operatingMargin":51.54,"roic":0,"debt":7715510,"shares":711.31,"eps":21847,"dividend":706002,"buyback":1736514,"debtReduction":2078522,"fcf":6191053},{"id":"p-2019","year":2019,"revenue":26990733,"netIncome":2016411,"ocf":6549736,"capex":12284646,"operatingMargin":10.07,"roic":0,"debt":12659359,"shares":710,"eps":2840,"dividend":684002,"buyback":0,"debtReduction":1921772,"fcf":-5734910},{"id":"p-2020","year":2020,"revenue":31900418,"netIncome":4758914,"ocf":12314571,"capex":9537891,"operatingMargin":15.71,"roic":0,"debt":12735244,"shares":684.54,"eps":6952,"dividend":800282,"buyback":0,"debtReduction":4155302,"fcf":2776680},{"id":"p-2021","year":2021,"revenue":42997792,"netIncome":9602316,"ocf":19797648,"capex":12486635,"operatingMargin":28.86,"roic":13.36,"debt":19149571,"shares":687.62,"eps":13984,"dividend":800282,"buyback":0,"debtReduction":0,"fcf":7311013},{"id":"p-2022","year":2022,"revenue":44621568,"netIncome":2229560,"ocf":14780517,"capex":19010261,"operatingMargin":15.26,"roic":4.92,"debt":24791685,"shares":687.65,"eps":3242,"dividend":1677821,"buyback":0,"debtReduction":0,"fcf":-4229744},{"id":"p-2023","year":2023,"revenue":32765719,"netIncome":-9112428,"ocf":4278191,"capex":8325138,"operatingMargin":-23.59,"roic":-9.71,"debt":32498506,"shares":688.14,"eps":-13244,"dividend":825575,"buyback":0,"debtReduction":0,"fcf":-4046947},{"id":"p-2024","year":2024,"revenue":66192960,"netIncome":19788681,"ocf":29795885,"capex":15945534,"operatingMargin":35.45,"roic":23.96,"debt":25452109,"shares":689.04,"eps":28418.66,"dividend":0,"buyback":0,"debtReduction":0,"fcf":13850351},{"id":"p-2025","year":2025,"revenue":97146675,"netIncome":42919287,"ocf":53373126,"capex":27518924,"operatingMargin":48.59,"roic":41.11,"debt":24757848,"shares":701.69,"eps":60377.79,"dividend":0,"buyback":0,"debtReduction":0,"fcf":25854202}]}];
+
+    const els = {
+      companyPresetSelect: document.getElementById("companyPresetSelect"),
+      companyName: document.getElementById("companyName"),
+      ticker: document.getElementById("ticker"),
+      unit: document.getElementById("unit"),
+      dataNote: document.getElementById("dataNote"),
+      statusLine: document.getElementById("statusLine"),
+      summaryCards: document.getElementById("summaryCards"),
+      financialTableBody: document.getElementById("financialTableBody"),
+      dataNotice: document.getElementById("dataNotice"),
+      scoreHero: document.getElementById("scoreHero"),
+      scoreBreakdown: document.getElementById("scoreBreakdown"),
+      chartsGrid: document.getElementById("chartsGrid"),
+      sankeyYear: document.getElementById("sankeyYear"),
+      sankeySvg: document.getElementById("sankeySvg"),
+      allocDividend: document.getElementById("allocDividend"),
+      allocBuyback: document.getElementById("allocBuyback"),
+      allocDebtReduction: document.getElementById("allocDebtReduction"),
+      allocationSummary: document.getElementById("allocationSummary"),
+      rulesWrap: document.getElementById("rulesWrap")
+    };
+
+    let state = loadInitialState();
+    let selectedYear = latestRow()?.year || new Date().getFullYear();
+    let autosaveTimer = null;
+
+    function makeId() {
+      return `r-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 8)}`;
+    }
+
+    function blankRow(year) {
+      return {
+        id: makeId(),
+        year,
+        revenue: 0,
+        netIncome: 0,
+        ocf: 0,
+        capex: 0,
+        operatingMargin: 0,
+        roic: 0,
+        debt: 0,
+        shares: 0,
+        eps: 0,
+        dividend: 0,
+        buyback: 0,
+        debtReduction: 0
+      };
+    }
+
+    function demoState() {
+      const rows = [
+        [2016, 82000, 9600, 14200, 3600, 18.5, 12.8, 26000, 5200, 1.85, 1100, 900, 400],
+        [2017, 87500, 11050, 15800, 3900, 19.1, 13.9, 25200, 5100, 2.17, 1250, 1100, 500],
+        [2018, 93600, 12600, 17450, 4200, 20.2, 14.8, 24100, 4980, 2.53, 1400, 1400, 700],
+        [2019, 99200, 13650, 19000, 4500, 20.8, 15.5, 22900, 4870, 2.80, 1600, 1700, 800],
+        [2020, 105300, 15100, 21500, 5100, 21.4, 16.7, 21400, 4740, 3.18, 1800, 2200, 1000],
+        [2021, 116800, 17800, 24800, 5700, 22.6, 18.1, 19800, 4610, 3.86, 2100, 3100, 1200],
+        [2022, 129500, 20500, 28200, 6500, 23.4, 19.4, 18400, 4480, 4.58, 2400, 4200, 1500],
+        [2023, 141700, 23250, 31800, 7200, 24.0, 20.6, 16500, 4340, 5.36, 2800, 5200, 1800],
+        [2024, 154200, 26400, 35600, 8000, 24.7, 21.3, 14600, 4180, 6.32, 3200, 6400, 2000],
+        [2025, 168900, 30100, 40100, 8900, 25.6, 22.5, 12700, 4020, 7.49, 3700, 7600, 2400]
+      ].map((item) => ({
+        id: makeId(),
+        year: item[0],
+        revenue: item[1],
+        netIncome: item[2],
+        ocf: item[3],
+        capex: item[4],
+        operatingMargin: item[5],
+        roic: item[6],
+        debt: item[7],
+        shares: item[8],
+        eps: item[9],
+        dividend: item[10],
+        buyback: item[11],
+        debtReduction: item[12]
+      }));
+
+      return {
+        presetKey: PRESET_DEMO_KEY,
+        company: {
+          name: "示範公司 Global Quality Co.",
+          ticker: "DEMO",
+          unit: "百萬美元",
+          note: "虛構示範資料，非真實即時數據"
+        },
+        rows
+      };
+    }
+
+    function loadInitialState() {
+      try {
+        const saved = localStorage.getItem(STORAGE_KEY);
+        if (saved) {
+          const parsed = JSON.parse(saved);
+          if (parsed && Array.isArray(parsed.rows)) {
+            return normalizeState(parsed);
+          }
+        }
+      } catch (error) {
+        console.warn(error);
+      }
+      return demoState();
+    }
+
+    function normalizeState(input) {
+      const base = demoState();
+      const company = {
+        name: input.company?.name || base.company.name,
+        ticker: input.company?.ticker || base.company.ticker,
+        unit: input.company?.unit || base.company.unit,
+        note: input.company?.note || base.company.note
+      };
+      const presetKeys = new Set([PRESET_DEMO_KEY, PRESET_CUSTOM_KEY, ...COMPANY_PRESETS.map((preset) => preset.key)]);
+      const presetKey = presetKeys.has(input.presetKey) ? input.presetKey : PRESET_CUSTOM_KEY;
+      const rows = (input.rows || []).map((row, index) => cleanRow({
+        ...blankRow(Number(row.year) || 2016 + index),
+        ...row,
+        id: row.id || makeId()
+      })).filter((row) => Number.isFinite(row.year));
+      return {
+        presetKey,
+        company,
+        rows: rows.length ? rows : base.rows
+      };
+    }
+
+    function cleanRow(row) {
+      const cleaned = { ...row };
+      cleaned.year = Math.trunc(parseNumber(cleaned.year, new Date().getFullYear()));
+      fieldConfig.forEach(([field]) => {
+        cleaned[field] = parseNumber(cleaned[field], 0);
+      });
+      cleaned.capex = Math.abs(cleaned.capex);
+      cleaned.dividend = Math.max(0, cleaned.dividend);
+      cleaned.buyback = Math.max(0, cleaned.buyback);
+      cleaned.debtReduction = Math.max(0, cleaned.debtReduction);
+      cleaned.debt = Math.max(0, cleaned.debt);
+      cleaned.shares = Math.max(0, cleaned.shares);
+      return cleaned;
+    }
+
+    function parseNumber(value, fallback = 0) {
+      if (typeof value === "number") {
+        return Number.isFinite(value) ? value : fallback;
+      }
+      if (value === null || value === undefined) {
+        return fallback;
+      }
+      let text = String(value).trim();
+      if (!text) {
+        return fallback;
+      }
+      let negative = false;
+      if (/^\(.*\)$/.test(text)) {
+        negative = true;
+        text = text.slice(1, -1);
+      }
+      const numeric = Number(text.replace(/[$,%\s]/g, "").replace(/,/g, ""));
+      if (!Number.isFinite(numeric)) {
+        return fallback;
+      }
+      return negative ? -numeric : numeric;
+    }
+
+    function getRowsSorted() {
+      return [...state.rows].sort((a, b) => Number(a.year) - Number(b.year));
+    }
+
+    function latestRow() {
+      const rows = getRowsSorted();
+      return rows[rows.length - 1] || null;
+    }
+
+    function selectedRow() {
+      const rows = getRowsSorted();
+      return rows.find((row) => String(row.year) === String(selectedYear)) || rows[rows.length - 1] || null;
+    }
+
+    function calcFcf(row) {
+      return parseNumber(row.ocf, 0) - Math.abs(parseNumber(row.capex, 0));
+    }
+
+    function calcFcfMargin(row) {
+      const revenue = parseNumber(row.revenue, 0);
+      if (!revenue) {
+        return null;
+      }
+      return calcFcf(row) / revenue;
+    }
+
+    function calcCagr(rows, getter) {
+      const valid = rows
+        .map((row) => ({ year: Number(row.year), value: Number(getter(row)) }))
+        .filter((point) => Number.isFinite(point.year) && Number.isFinite(point.value) && point.value > 0)
+        .sort((a, b) => a.year - b.year);
+      if (valid.length < 2) {
+        return null;
+      }
+      const first = valid[0];
+      const last = valid[valid.length - 1];
+      const years = last.year - first.year;
+      if (years <= 0 || first.value <= 0) {
+        return null;
+      }
+      return Math.pow(last.value / first.value, 1 / years) - 1;
+    }
+
+    function average(values) {
+      const valid = values.filter((value) => Number.isFinite(value));
+      if (!valid.length) {
+        return null;
+      }
+      return valid.reduce((sum, value) => sum + value, 0) / valid.length;
+    }
+
+    function calculateMetrics() {
+      const rows = getRowsSorted();
+      const latest = rows[rows.length - 1] || null;
+      const revenueCagr = calcCagr(rows, (row) => row.revenue);
+      const fcfCagr = calcCagr(rows, (row) => calcFcf(row));
+      const sharesCagr = calcCagr(rows, (row) => row.shares);
+      const latestFcf = latest ? calcFcf(latest) : null;
+      const latestFcfMargin = latest ? calcFcfMargin(latest) : null;
+      const debtCoverage = latest && latestFcf > 0 ? latest.debt / latestFcf : null;
+      const ocfQuality = average(rows.map((row) => row.netIncome > 0 ? row.ocf / row.netIncome : null));
+      const positiveFcfRatio = rows.length ? rows.filter((row) => calcFcf(row) > 0).length / rows.length : null;
+      const fcfPairs = rows.slice(1).map((row, index) => calcFcf(row) >= calcFcf(rows[index]) ? 1 : 0);
+      const fcfUpRatio = fcfPairs.length ? fcfPairs.reduce((sum, value) => sum + value, 0) / fcfPairs.length : null;
+
+      return {
+        rows,
+        latest,
+        revenueCagr,
+        fcfCagr,
+        sharesCagr,
+        latestFcf,
+        latestFcfMargin,
+        debtCoverage,
+        ocfQuality,
+        positiveFcfRatio,
+        fcfUpRatio,
+        latestOperatingMargin: latest ? latest.operatingMargin : null,
+        latestRoic: latest ? latest.roic : null
+      };
+    }
+
+    function scoreByMinimum(value, brackets) {
+      if (!Number.isFinite(value)) {
+        return 0;
+      }
+      for (const bracket of brackets) {
+        if (value >= bracket.min) {
+          return bracket.points;
+        }
+      }
+      return 0;
+    }
+
+    function calculateScore(metrics) {
+      const debtCoverageScore = (() => {
+        if (metrics.latest && metrics.latest.debt <= 0 && metrics.latestFcf > 0) {
+          return 10;
+        }
+        if (!Number.isFinite(metrics.debtCoverage)) {
+          return 0;
+        }
+        if (metrics.debtCoverage <= 1) return 10;
+        if (metrics.debtCoverage <= 3) return 8;
+        if (metrics.debtCoverage <= 5) return 5;
+        if (metrics.debtCoverage <= 8) return 2;
+        return 0;
+      })();
+
+      const sharesScore = (() => {
+        if (!Number.isFinite(metrics.sharesCagr)) {
+          return 0;
+        }
+        if (metrics.sharesCagr <= -0.02) return 8;
+        if (metrics.sharesCagr <= 0) return 6;
+        if (metrics.sharesCagr <= 0.02) return 3;
+        return 0;
+      })();
+
+      const consistencyScore = Math.round((
+        (Number.isFinite(metrics.positiveFcfRatio) ? metrics.positiveFcfRatio * 5 : 0) +
+        (Number.isFinite(metrics.fcfUpRatio) ? metrics.fcfUpRatio * 3 : 0)
+      ) * 10) / 10;
+
+      const factors = [
+        {
+          label: "營收 CAGR",
+          value: formatPercent(metrics.revenueCagr),
+          points: scoreByMinimum(metrics.revenueCagr, [
+            { min: 0.10, points: 12 },
+            { min: 0.05, points: 9 },
+            { min: 0, points: 6 }
+          ]),
+          max: 12,
+          rule: ">=10% 得 12；>=5% 得 9；>=0% 得 6；低於 0 得 0"
+        },
+        {
+          label: "FCF CAGR",
+          value: formatPercent(metrics.fcfCagr),
+          points: scoreByMinimum(metrics.fcfCagr, [
+            { min: 0.10, points: 14 },
+            { min: 0.05, points: 10 },
+            { min: 0, points: 6 }
+          ]),
+          max: 14,
+          rule: ">=10% 得 14；>=5% 得 10；>=0% 得 6；低於 0 得 0"
+        },
+        {
+          label: "FCF Margin",
+          value: formatPercent(metrics.latestFcfMargin),
+          points: scoreByMinimum(metrics.latestFcfMargin, [
+            { min: 0.25, points: 14 },
+            { min: 0.15, points: 11 },
+            { min: 0.08, points: 7 },
+            { min: 0.000001, points: 3 }
+          ]),
+          max: 14,
+          rule: ">=25% 得 14；>=15% 得 11；>=8% 得 7；正數得 3"
+        },
+        {
+          label: "Operating Margin",
+          value: formatPercentFromWhole(metrics.latestOperatingMargin),
+          points: scoreByMinimum(metrics.latestOperatingMargin, [
+            { min: 25, points: 10 },
+            { min: 15, points: 8 },
+            { min: 8, points: 5 },
+            { min: 0.000001, points: 2 }
+          ]),
+          max: 10,
+          rule: ">=25% 得 10；>=15% 得 8；>=8% 得 5；正數得 2"
+        },
+        {
+          label: "ROIC",
+          value: formatPercentFromWhole(metrics.latestRoic),
+          points: scoreByMinimum(metrics.latestRoic, [
+            { min: 25, points: 14 },
+            { min: 15, points: 11 },
+            { min: 10, points: 7 },
+            { min: 0.000001, points: 3 }
+          ]),
+          max: 14,
+          rule: ">=25% 得 14；>=15% 得 11；>=10% 得 7；正數得 3"
+        },
+        {
+          label: "盈餘轉現率",
+          value: formatRatio(metrics.ocfQuality),
+          points: scoreByMinimum(metrics.ocfQuality, [
+            { min: 1.10, points: 10 },
+            { min: 0.90, points: 8 },
+            { min: 0.70, points: 5 },
+            { min: 0.000001, points: 2 }
+          ]),
+          max: 10,
+          rule: "平均 OCF / Net Income；>=1.1 得 10；>=0.9 得 8；>=0.7 得 5"
+        },
+        {
+          label: "負債覆蓋年數",
+          value: formatYears(metrics.debtCoverage),
+          points: debtCoverageScore,
+          max: 10,
+          rule: "Debt / 最新 FCF；<=1 年得 10；<=3 年得 8；<=5 年得 5；<=8 年得 2"
+        },
+        {
+          label: "股數趨勢",
+          value: formatPercent(metrics.sharesCagr),
+          points: sharesScore,
+          max: 8,
+          rule: "Shares CAGR <=-2% 得 8；<=0% 得 6；<=2% 得 3；高於 2% 得 0"
+        },
+        {
+          label: "FCF 穩定性",
+          value: formatRatio(metrics.positiveFcfRatio),
+          points: consistencyScore,
+          max: 8,
+          rule: "正 FCF 年份占 5 分，FCF 年增年份占 3 分"
+        }
+      ];
+
+      const total = Math.round(factors.reduce((sum, factor) => sum + factor.points, 0));
+      const grade = total >= 85 ? "A" : total >= 75 ? "B" : total >= 65 ? "C" : total >= 50 ? "D" : "F";
+      const gradeText = {
+        A: "世界級品質",
+        B: "優秀企業",
+        C: "尚可，需比較同業",
+        D: "需深入檢查",
+        F: "暫不列入核心觀察"
+      }[grade];
+
+      return { total, grade, gradeText, factors };
+    }
+
+    function formatNumber(value, digits = 0) {
+      if (!Number.isFinite(Number(value))) {
+        return "資料不足";
+      }
+      return new Intl.NumberFormat("zh-TW", {
+        maximumFractionDigits: digits,
+        minimumFractionDigits: digits
+      }).format(Number(value));
+    }
+
+    function formatShort(value) {
+      if (!Number.isFinite(Number(value))) {
+        return "N/A";
+      }
+      const number = Number(value);
+      const abs = Math.abs(number);
+      if (abs >= 1000000) return `${trimFixed(number / 1000000, 1)}M`;
+      if (abs >= 1000) return `${trimFixed(number / 1000, 1)}K`;
+      return trimFixed(number, abs < 10 ? 1 : 0);
+    }
+
+    function trimFixed(value, digits) {
+      return Number(value).toFixed(digits).replace(/\.0+$/, "").replace(/(\.\d*[1-9])0+$/, "$1");
+    }
+
+    function formatPercent(value) {
+      if (!Number.isFinite(Number(value))) {
+        return "資料不足";
+      }
+      return `${trimFixed(Number(value) * 100, 1)}%`;
+    }
+
+    function formatPercentFromWhole(value) {
+      if (!Number.isFinite(Number(value))) {
+        return "資料不足";
+      }
+      return `${trimFixed(Number(value), 1)}%`;
+    }
+
+    function formatRatio(value) {
+      if (!Number.isFinite(Number(value))) {
+        return "資料不足";
+      }
+      return `${trimFixed(Number(value), 2)}x`;
+    }
+
+    function formatYears(value) {
+      if (!Number.isFinite(Number(value))) {
+        return "資料不足";
+      }
+      return `${trimFixed(Number(value), 1)} 年`;
+    }
+
+    function escapeHtml(value) {
+      return String(value)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+    }
+
+    function presetLabel(preset) {
+      return `${preset.company.ticker} · ${preset.company.name}`;
+    }
+
+    function renderPresetSelect() {
+      const options = [
+        `<option value="${PRESET_DEMO_KEY}">DEMO · 虛構示範資料</option>`,
+        ...COMPANY_PRESETS.map((preset) => `<option value="${escapeHtml(preset.key)}">${escapeHtml(presetLabel(preset))}</option>`),
+        `<option value="${PRESET_CUSTOM_KEY}">自訂資料</option>`
+      ];
+      els.companyPresetSelect.innerHTML = options.join("");
+      const keys = new Set([PRESET_DEMO_KEY, PRESET_CUSTOM_KEY, ...COMPANY_PRESETS.map((preset) => preset.key)]);
+      els.companyPresetSelect.value = keys.has(state.presetKey) ? state.presetKey : PRESET_CUSTOM_KEY;
+    }
+
+    function presetToState(key) {
+      if (key === PRESET_DEMO_KEY) {
+        return demoState();
+      }
+      const preset = COMPANY_PRESETS.find((item) => item.key === key);
+      if (!preset) {
+        return { ...state, presetKey: PRESET_CUSTOM_KEY };
+      }
+      return {
+        presetKey: preset.key,
+        company: { ...preset.company },
+        rows: preset.rows.map((row) => cleanRow({
+          ...blankRow(row.year),
+          ...row,
+          id: makeId()
+        }))
+      };
+    }
+
+    function loadPreset(key, confirmFirst = true) {
+      if (key === PRESET_CUSTOM_KEY) {
+        state.presetKey = PRESET_CUSTOM_KEY;
+        renderPresetSelect();
+        scheduleAutosave();
+        setStatus("已切換為自訂資料模式，畫面資料維持不變。", "good");
+        return;
+      }
+      const label = key === PRESET_DEMO_KEY ? "虛構示範資料" : presetLabel(COMPANY_PRESETS.find((preset) => preset.key === key) || { company: { ticker: key, name: "" } });
+      if (confirmFirst && !confirm(`載入「${label}」會覆蓋目前畫面資料，確定要繼續嗎？`)) {
+        renderPresetSelect();
+        return;
+      }
+      state = presetToState(key);
+      selectedYear = latestRow()?.year || new Date().getFullYear();
+      renderAll({ company: true, table: true, sankeyInputs: true });
+      scheduleAutosave();
+      setStatus(key === PRESET_DEMO_KEY ? "已載入虛構示範資料。" : `已載入 ${label} 預載資料。`, "good");
+    }
+
+    function markCustom() {
+      if (state.presetKey === PRESET_CUSTOM_KEY) return;
+      state.presetKey = PRESET_CUSTOM_KEY;
+      if (els.companyPresetSelect) {
+        els.companyPresetSelect.value = PRESET_CUSTOM_KEY;
+      }
+    }
+
+    function renderCompanyInputs() {
+      els.companyName.value = state.company.name;
+      els.ticker.value = state.company.ticker;
+      els.unit.value = state.company.unit;
+      els.dataNote.value = state.company.note;
+    }
+
+    function renderAll(options = {}) {
+      const { company = false, table = true, sankeyInputs = true } = options;
+      state = normalizeState(state);
+      const rows = getRowsSorted();
+      if (!rows.find((row) => String(row.year) === String(selectedYear))) {
+        selectedYear = rows[rows.length - 1]?.year || new Date().getFullYear();
+      }
+      renderPresetSelect();
+      if (company) renderCompanyInputs();
+      if (table) renderTable();
+      renderSummaryCards();
+      renderScorePanel();
+      renderCharts();
+      renderSankeyYearOptions();
+      if (sankeyInputs) {
+        renderAllocationInputs();
+      }
+      renderSankey();
+      renderRules();
+      renderDataNotice();
+    }
+
+    function renderTable() {
+      const rows = getRowsSorted();
+      els.financialTableBody.innerHTML = rows.map((row) => {
+        const cells = fieldConfig.map(([field]) => {
+          const cssClass = field === "eps" || field === "operatingMargin" || field === "roic" ? "cell-input" : "cell-input";
+          return `<td><input class="${cssClass}" type="number" step="0.01" inputmode="decimal" value="${escapeHtml(row[field])}" data-id="${escapeHtml(row.id)}" data-field="${field}" aria-label="${escapeHtml(field)} ${escapeHtml(row.year)}"></td>`;
+        });
+        return `
+          <tr data-id="${escapeHtml(row.id)}">
+            <td><input class="cell-input year-input" type="number" step="1" value="${escapeHtml(row.year)}" data-id="${escapeHtml(row.id)}" data-field="year" aria-label="Year"></td>
+            ${cells.slice(0, 4).join("")}
+            <td class="computed-cell" data-computed="fcf" data-id="${escapeHtml(row.id)}">${formatNumber(calcFcf(row), 0)}</td>
+            <td class="computed-cell" data-computed="fcfMargin" data-id="${escapeHtml(row.id)}">${formatPercent(calcFcfMargin(row))}</td>
+            ${cells.slice(4).join("")}
+            <td class="row-actions"><button type="button" class="icon-button danger" data-action="delete-row" data-id="${escapeHtml(row.id)}" aria-label="刪除 ${escapeHtml(row.year)}">×</button></td>
+          </tr>
+        `;
+      }).join("");
+    }
+
+    function renderSummaryCards() {
+      const metrics = calculateMetrics();
+      const score = calculateScore(metrics);
+      const latest = metrics.latest;
+      const unit = state.company.unit || "自訂單位";
+      const cards = [
+        {
+          label: "企業品質",
+          value: `${score.total}`,
+          sub: `${score.grade} 級，${score.gradeText}`,
+          className: `grade-${score.grade.toLowerCase()}`
+        },
+        {
+          label: "最新 FCF",
+          value: latest ? formatNumber(metrics.latestFcf, 0) : "資料不足",
+          sub: latest ? `${latest.year}，${unit}` : "需要年度資料"
+        },
+        {
+          label: "FCF Margin",
+          value: formatPercent(metrics.latestFcfMargin),
+          sub: "FCF / Revenue"
+        },
+        {
+          label: "營收 CAGR",
+          value: formatPercent(metrics.revenueCagr),
+          sub: "最早年度到最新年度"
+        },
+        {
+          label: "FCF CAGR",
+          value: formatPercent(metrics.fcfCagr),
+          sub: "自由現金流複合成長"
+        },
+        {
+          label: "負債覆蓋",
+          value: formatYears(metrics.debtCoverage),
+          sub: "Debt / 最新 FCF"
+        }
+      ];
+
+      els.summaryCards.innerHTML = cards.map((card) => `
+        <article class="metric-card ${card.className || ""}">
+          <div class="label">${escapeHtml(card.label)}</div>
+          <div class="value">${escapeHtml(card.value)}</div>
+          <div class="sub">${escapeHtml(card.sub)}</div>
+        </article>
+      `).join("");
+    }
+
+    function renderScorePanel() {
+      const metrics = calculateMetrics();
+      const score = calculateScore(metrics);
+      els.scoreHero.innerHTML = `
+        <div class="score-number">${score.total}</div>
+        <div>
+          <div class="grade-badge">${score.grade} 級</div>
+          <h3>${escapeHtml(score.gradeText)}</h3>
+          <p>分數會隨年度資料與資本效率即時更新。</p>
+        </div>
+      `;
+
+      els.scoreBreakdown.innerHTML = score.factors.map((factor) => {
+        const width = Math.max(0, Math.min(100, factor.points / factor.max * 100));
+        return `
+          <div class="score-row">
+            <div>
+              <strong>${escapeHtml(factor.label)}</strong>
+              <small>${escapeHtml(factor.value)}</small>
+            </div>
+            <div class="score-points">${formatNumber(factor.points, factor.points % 1 ? 1 : 0)} / ${factor.max}</div>
+            <div class="bar" style="--bar-width: ${width}%"><span></span></div>
+          </div>
+        `;
+      }).join("");
+    }
+
+    function renderRules() {
+      const score = calculateScore(calculateMetrics());
+      els.rulesWrap.innerHTML = `
+        <table class="rules-table">
+          <thead>
+            <tr>
+              <th>指標</th>
+              <th>本次數值</th>
+              <th>得分</th>
+              <th>規則</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${score.factors.map((factor) => `
+              <tr>
+                <td>${escapeHtml(factor.label)}</td>
+                <td>${escapeHtml(factor.value)}</td>
+                <td>${formatNumber(factor.points, factor.points % 1 ? 1 : 0)} / ${factor.max}</td>
+                <td style="text-align:left; white-space:normal;">${escapeHtml(factor.rule)}</td>
+              </tr>
+            `).join("")}
+          </tbody>
+        </table>
+      `;
+    }
+
+    function renderDataNotice() {
+      const rows = getRowsSorted();
+      const latest = latestRow();
+      const messages = [];
+      let className = "notice";
+      if (rows.length < 10) {
+        messages.push(`目前只有 ${rows.length} 年資料，建議至少 10 年。`);
+        className = "notice warn";
+      }
+      if (latest && calcFcf(latest) <= 0) {
+        messages.push(`${latest.year} 年 FCF 小於或等於 0，負債覆蓋與資本配置需特別檢查。`);
+        className = "notice danger";
+      }
+      if (!messages.length) {
+        messages.push("資料年數足夠，FCF、CAGR、評分與圖表已根據目前表格更新。");
+      }
+      els.dataNotice.className = className;
+      els.dataNotice.textContent = messages.join(" ");
+    }
+
+    function renderCharts() {
+      const rows = getRowsSorted();
+      const charts = [
+        { label: "Revenue 營收", getter: (row) => row.revenue, color: "var(--series-a)" },
+        { label: "Operating Cash Flow", getter: (row) => row.ocf, color: "var(--series-b)" },
+        { label: "Free Cash Flow", getter: (row) => calcFcf(row), color: "var(--series-c)" },
+        { label: "Debt 負債", getter: (row) => row.debt, color: "var(--series-d)" },
+        { label: "Shares Outstanding", getter: (row) => row.shares, color: "var(--series-e)" }
+      ];
+      els.chartsGrid.innerHTML = charts.map((chart) => `
+        <article class="chart-card">
+          <h3>${escapeHtml(chart.label)}</h3>
+          ${lineChartSvg(rows, chart)}
+        </article>
+      `).join("");
+    }
+
+    function lineChartSvg(rows, chart) {
+      const points = rows
+        .map((row) => ({ year: Number(row.year), value: Number(chart.getter(row)) }))
+        .filter((point) => Number.isFinite(point.year) && Number.isFinite(point.value));
+
+      if (points.length < 2) {
+        return `<div class="chart-empty">需要至少兩年資料</div>`;
+      }
+
+      const width = 420;
+      const height = 220;
+      const margin = { top: 18, right: 18, bottom: 34, left: 58 };
+      const plotWidth = width - margin.left - margin.right;
+      const plotHeight = height - margin.top - margin.bottom;
+      let minValue = Math.min(...points.map((point) => point.value));
+      let maxValue = Math.max(...points.map((point) => point.value));
+      if (minValue > 0) {
+        minValue = chart.label.includes("Shares") ? minValue * 0.94 : 0;
+      }
+      if (minValue === maxValue) {
+        maxValue += 1;
+        minValue -= 1;
+      }
+      const x = (index) => margin.left + (points.length === 1 ? 0 : index / (points.length - 1)) * plotWidth;
+      const y = (value) => margin.top + (maxValue - value) / (maxValue - minValue) * plotHeight;
+      const path = points.map((point, index) => `${index ? "L" : "M"} ${x(index).toFixed(1)} ${y(point.value).toFixed(1)}`).join(" ");
+      const gridValues = [0, 0.25, 0.5, 0.75, 1].map((ratio) => minValue + (maxValue - minValue) * ratio);
+      const grid = gridValues.map((value) => {
+        const gy = y(value);
+        return `
+          <line x1="${margin.left}" y1="${gy.toFixed(1)}" x2="${width - margin.right}" y2="${gy.toFixed(1)}" stroke="var(--border)" stroke-width="1"></line>
+          <text x="${margin.left - 8}" y="${(gy + 4).toFixed(1)}" text-anchor="end" fill="var(--muted)" font-size="11">${escapeHtml(formatShort(value))}</text>
+        `;
+      }).join("");
+      const circles = points.map((point, index) => `
+        <circle cx="${x(index).toFixed(1)}" cy="${y(point.value).toFixed(1)}" r="3.2" fill="${chart.color}">
+          <title>${point.year}: ${formatNumber(point.value, point.value % 1 ? 2 : 0)}</title>
+        </circle>
+      `).join("");
+      const first = points[0];
+      const last = points[points.length - 1];
+
+      return `
+        <svg viewBox="0 0 ${width} ${height}" role="img" aria-label="${escapeHtml(chart.label)} 趨勢圖">
+          <title>${escapeHtml(chart.label)} 趨勢圖</title>
+          <rect x="0" y="0" width="${width}" height="${height}" fill="transparent"></rect>
+          ${grid}
+          <path d="${path}" fill="none" stroke="${chart.color}" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"></path>
+          ${circles}
+          <text x="${margin.left}" y="${height - 10}" fill="var(--muted)" font-size="11">${escapeHtml(first.year)}</text>
+          <text x="${width - margin.right}" y="${height - 10}" text-anchor="end" fill="var(--muted)" font-size="11">${escapeHtml(last.year)}</text>
+          <text x="${width - margin.right}" y="${margin.top + 12}" text-anchor="end" fill="var(--text)" font-size="12">最新 ${escapeHtml(formatShort(last.value))}</text>
+        </svg>
+      `;
+    }
+
+    function renderSankeyYearOptions() {
+      const rows = getRowsSorted();
+      els.sankeyYear.innerHTML = rows.map((row) => `<option value="${escapeHtml(row.year)}">${escapeHtml(row.year)}</option>`).join("");
+      els.sankeyYear.value = String(selectedYear);
+    }
+
+    function renderAllocationInputs() {
+      const row = selectedRow();
+      if (!row) {
+        els.allocDividend.value = "";
+        els.allocBuyback.value = "";
+        els.allocDebtReduction.value = "";
+        return;
+      }
+      els.allocDividend.value = row.dividend;
+      els.allocBuyback.value = row.buyback;
+      els.allocDebtReduction.value = row.debtReduction;
+    }
+
+    function renderSankey() {
+      const row = selectedRow();
+      if (!row) {
+        els.sankeySvg.innerHTML = "";
+        els.allocationSummary.textContent = "需要年度資料。";
+        return;
+      }
+
+      const unit = state.company.unit || "自訂單位";
+      const ocf = Math.max(0, Number(row.ocf) || 0);
+      const capex = Math.max(0, Math.abs(Number(row.capex) || 0));
+      const fcf = calcFcf(row);
+      const availableFcf = Math.max(0, fcf);
+      const dividend = Math.max(0, Number(row.dividend) || 0);
+      const buyback = Math.max(0, Number(row.buyback) || 0);
+      const debtReduction = Math.max(0, Number(row.debtReduction) || 0);
+      const allocationSum = dividend + buyback + debtReduction;
+      const retained = Math.max(0, availableFcf - allocationSum);
+      const capexGap = Math.max(0, capex - ocf);
+      const allocationGap = Math.max(0, allocationSum - availableFcf);
+      const totalExternal = capexGap + allocationGap;
+      const fcfFundingRatio = allocationSum > 0 ? Math.min(1, availableFcf / allocationSum) : 1;
+
+      const nodes = new Map();
+      const addNode = (id, label, column, color, forceShow = false) => {
+        nodes.set(id, { id, label, column, color, forceShow, value: 0, inOffset: 0, outOffset: 0 });
+      };
+
+      addNode("ocf", "Operating Cash Flow", 0, "var(--series-b)", true);
+      if (totalExternal > 0) addNode("external", "其他資金/既有現金", 0, "var(--rose)", true);
+      addNode("capex", "CAPEX", 1, "var(--series-c)", true);
+      addNode("fcf", "Free Cash Flow", 1, "var(--primary)", true);
+      addNode("dividend", "Dividend 股利", 2, "var(--blue)", true);
+      addNode("buyback", "Buyback 回購", 2, "var(--violet)", true);
+      addNode("debtReduction", "Debt Reduction 還債", 2, "var(--amber)", true);
+      addNode("retained", "Retained Cash 保留現金", 2, "var(--green)", true);
+
+      const links = [];
+      const addLink = (source, target, value, color, label) => {
+        if (!Number.isFinite(value) || value <= 0) return;
+        links.push({ source, target, value, color, label });
+        nodes.get(source).value = Math.max(nodes.get(source).value, 0);
+        nodes.get(target).value = Math.max(nodes.get(target).value, 0);
+      };
+
+      addLink("ocf", "capex", Math.min(ocf, capex), "var(--series-c)", "OCF 用於 CAPEX");
+      addLink("ocf", "fcf", availableFcf, "var(--primary)", "OCF 扣除 CAPEX 後的 FCF");
+      if (capexGap > 0) {
+        addLink("external", "capex", capexGap, "var(--rose)", "OCF 不足以支應 CAPEX 的缺口");
+      }
+
+      if (allocationSum <= availableFcf) {
+        addLink("fcf", "dividend", dividend, "var(--blue)", "FCF 用於股利");
+        addLink("fcf", "buyback", buyback, "var(--violet)", "FCF 用於股票回購");
+        addLink("fcf", "debtReduction", debtReduction, "var(--amber)", "FCF 用於還債");
+        addLink("fcf", "retained", retained, "var(--green)", "FCF 保留現金");
+      } else {
+        addLink("fcf", "dividend", dividend * fcfFundingRatio, "var(--blue)", "FCF 支應的股利");
+        addLink("fcf", "buyback", buyback * fcfFundingRatio, "var(--violet)", "FCF 支應的股票回購");
+        addLink("fcf", "debtReduction", debtReduction * fcfFundingRatio, "var(--amber)", "FCF 支應的還債");
+        addLink("external", "dividend", dividend * (1 - fcfFundingRatio), "var(--rose)", "其他資金支應的股利");
+        addLink("external", "buyback", buyback * (1 - fcfFundingRatio), "var(--rose)", "其他資金支應的股票回購");
+        addLink("external", "debtReduction", debtReduction * (1 - fcfFundingRatio), "var(--rose)", "其他資金支應的還債");
+      }
+
+      nodes.get("ocf").value = Math.max(ocf, links.filter((link) => link.source === "ocf").reduce((sum, link) => sum + link.value, 0));
+      if (nodes.has("external")) nodes.get("external").value = totalExternal;
+      nodes.get("capex").value = capex;
+      nodes.get("fcf").value = availableFcf;
+      nodes.get("dividend").value = dividend;
+      nodes.get("buyback").value = buyback;
+      nodes.get("debtReduction").value = debtReduction;
+      nodes.get("retained").value = retained;
+
+      const width = 960;
+      const height = 360;
+      const nodeWidth = 18;
+      const columnX = [52, 360, 744];
+      const yStart = 58;
+      const availableHeight = 250;
+      const columns = [[], [], []];
+      nodes.forEach((node) => columns[node.column].push(node));
+      const maxColumnTotal = Math.max(1, ...columns.map((column) => column.reduce((sum, node) => sum + Math.max(0, node.value), 0)));
+      const scale = Math.min(availableHeight / maxColumnTotal, 18);
+      const visualSize = (value, forceShow) => value > 0 ? Math.max(4, value * scale) : forceShow ? 10 : 0;
+
+      columns.forEach((column, columnIndex) => {
+        const visibleNodes = column.filter((node) => node.forceShow || node.value > 0);
+        const gap = visibleNodes.length > 3 ? 14 : 22;
+        const totalHeight = visibleNodes.reduce((sum, node) => sum + visualSize(node.value, node.forceShow), 0) + Math.max(0, visibleNodes.length - 1) * gap;
+        let y = yStart + Math.max(0, (availableHeight - totalHeight) / 2);
+        visibleNodes.forEach((node) => {
+          node.x = columnX[columnIndex];
+          node.y = y;
+          node.height = visualSize(node.value, node.forceShow);
+          y += node.height + gap;
+        });
+      });
+
+      const linkMarkup = links.map((link) => {
+        const source = nodes.get(link.source);
+        const target = nodes.get(link.target);
+        const thickness = Math.max(2, link.value * scale);
+        const sx = source.x + nodeWidth;
+        const tx = target.x;
+        const sy = source.y + source.outOffset + thickness / 2;
+        const ty = target.y + target.inOffset + thickness / 2;
+        source.outOffset += thickness;
+        target.inOffset += thickness;
+        const c1 = sx + (tx - sx) * 0.45;
+        const c2 = sx + (tx - sx) * 0.62;
+        return `
+          <path d="M ${sx.toFixed(1)} ${sy.toFixed(1)} C ${c1.toFixed(1)} ${sy.toFixed(1)}, ${c2.toFixed(1)} ${ty.toFixed(1)}, ${tx.toFixed(1)} ${ty.toFixed(1)}"
+            fill="none" stroke="${link.color}" stroke-width="${thickness.toFixed(2)}" stroke-opacity="0.48" stroke-linecap="butt">
+            <title>${escapeHtml(link.label)}: ${formatNumber(link.value, 0)} ${escapeHtml(unit)}</title>
+          </path>
+        `;
+      }).join("");
+
+      const nodeMarkup = [...nodes.values()].filter((node) => node.forceShow || node.value > 0).map((node) => `
+        <g>
+          <rect x="${node.x}" y="${node.y.toFixed(1)}" width="${nodeWidth}" height="${node.height.toFixed(1)}" rx="4" fill="${node.color}"></rect>
+          <text x="${node.x}" y="${Math.max(16, node.y - 8).toFixed(1)}" fill="var(--text)" font-size="13" font-weight="500">${escapeHtml(node.label)}</text>
+          <text x="${node.x}" y="${(node.y + node.height + 16).toFixed(1)}" fill="var(--muted)" font-size="12">${escapeHtml(formatNumber(node.value, 0))}</text>
+        </g>
+      `).join("");
+
+      const warning = fcf < 0
+        ? `<text x="52" y="340" fill="var(--danger)" font-size="13">FCF 為負：OCF 不足以支應 CAPEX。</text>`
+        : allocationGap > 0
+          ? `<text x="52" y="340" fill="var(--danger)" font-size="13">資本配置超過 FCF，差額由其他資金或既有現金補足。</text>`
+          : `<text x="52" y="340" fill="var(--muted)" font-size="13">河流寬度依金額比例繪製；移到河流上可查看明細。</text>`;
+
+      els.sankeySvg.setAttribute("viewBox", `0 0 ${width} ${height}`);
+      els.sankeySvg.innerHTML = `
+        <title>${escapeHtml(row.year)} 自由現金流 Sankey 河流圖</title>
+        <rect x="0" y="0" width="${width}" height="${height}" rx="8" fill="transparent"></rect>
+        ${linkMarkup}
+        ${nodeMarkup}
+        <text x="52" y="28" fill="var(--text)" font-size="14" font-weight="500">${escapeHtml(row.year)} 年現金流配置</text>
+        <text x="744" y="28" fill="var(--muted)" font-size="12">單位：${escapeHtml(unit)}</text>
+        ${warning}
+      `;
+
+      const retainedCash = fcf - allocationSum;
+      els.allocationSummary.innerHTML = `
+        <div><strong>OCF:</strong> ${formatNumber(ocf, 0)} ${escapeHtml(unit)}</div>
+        <div><strong>CAPEX:</strong> ${formatNumber(capex, 0)} ${escapeHtml(unit)}</div>
+        <div><strong>FCF:</strong> ${formatNumber(fcf, 0)} ${escapeHtml(unit)}</div>
+        <div><strong>資本配置合計:</strong> ${formatNumber(allocationSum, 0)} ${escapeHtml(unit)}</div>
+        <div><strong>${retainedCash >= 0 ? "Retained Cash" : "資金缺口"}:</strong> ${formatNumber(retainedCash, 0)} ${escapeHtml(unit)}</div>
+      `;
+    }
+
+    function updateComputedCells(row) {
+      const fcfCell = document.querySelector(`[data-computed="fcf"][data-id="${CSS.escape(row.id)}"]`);
+      const marginCell = document.querySelector(`[data-computed="fcfMargin"][data-id="${CSS.escape(row.id)}"]`);
+      if (fcfCell) fcfCell.textContent = formatNumber(calcFcf(row), 0);
+      if (marginCell) marginCell.textContent = formatPercent(calcFcfMargin(row));
+    }
+
+    function setStatus(message, className = "") {
+      els.statusLine.textContent = message;
+      els.statusLine.className = `status-line ${className}`.trim();
+    }
+
+    function scheduleAutosave() {
+      clearTimeout(autosaveTimer);
+      autosaveTimer = setTimeout(() => {
+        saveLocal(false);
+      }, 450);
+    }
+
+    function saveLocal(showMessage = true) {
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+        if (showMessage) {
+          setStatus("已儲存到本機瀏覽器。", "good");
+        }
+      } catch (error) {
+        setStatus("本機儲存失敗，可能是瀏覽器限制或儲存空間不足。", "warn");
+      }
+    }
+
+    function exportJson() {
+      const metrics = calculateMetrics();
+      const score = calculateScore(metrics);
+      const payload = {
+        exportedAt: new Date().toISOString(),
+        note: "此 JSON 來自本機儀表板；示範資料為虛構資料，使用者資料不代表即時市場數據。",
+        presetKey: state.presetKey || PRESET_CUSTOM_KEY,
+        company: state.company,
+        score: {
+          total: score.total,
+          grade: score.grade,
+          gradeText: score.gradeText
+        },
+        metrics: {
+          revenueCagr: metrics.revenueCagr,
+          fcfCagr: metrics.fcfCagr,
+          debtCoverageYears: metrics.debtCoverage,
+          latestFcf: metrics.latestFcf,
+          latestFcfMargin: metrics.latestFcfMargin
+        },
+        rows: getRowsSorted().map((row) => ({
+          ...row,
+          freeCashFlow: calcFcf(row),
+          fcfMargin: calcFcfMargin(row)
+        }))
+      };
+      const blob = new Blob([JSON.stringify(payload, null, 2)], { type: "application/json" });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      const ticker = (state.company.ticker || "company").replace(/[^\w-]+/g, "-").toLowerCase();
+      link.href = url;
+      link.download = `${ticker}-financial-health-dashboard.json`;
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      URL.revokeObjectURL(url);
+      setStatus("JSON 已匯出。", "good");
+    }
+
+    function downloadCsvTemplate() {
+      const header = "year,revenue,netIncome,ocf,capex,operatingMargin,roic,debt,shares,eps,dividend,buyback,debtReduction";
+      const sample = getRowsSorted().map((row) => [
+        row.year,
+        row.revenue,
+        row.netIncome,
+        row.ocf,
+        row.capex,
+        row.operatingMargin,
+        row.roic,
+        row.debt,
+        row.shares,
+        row.eps,
+        row.dividend,
+        row.buyback,
+        row.debtReduction
+      ].join(","));
+      const blob = new Blob([[header, ...sample].join("\n")], { type: "text/csv;charset=utf-8" });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = "financial-dashboard-template.csv";
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      URL.revokeObjectURL(url);
+      setStatus("CSV 範本已下載。", "good");
+    }
+
+    function parseCsvLine(line) {
+      const result = [];
+      let current = "";
+      let inQuotes = false;
+      for (let index = 0; index < line.length; index += 1) {
+        const char = line[index];
+        const next = line[index + 1];
+        if (char === "\"" && inQuotes && next === "\"") {
+          current += "\"";
+          index += 1;
+        } else if (char === "\"") {
+          inQuotes = !inQuotes;
+        } else if (char === "," && !inQuotes) {
+          result.push(current);
+          current = "";
+        } else {
+          current += char;
+        }
+      }
+      result.push(current);
+      return result;
+    }
+
+    function normalizeHeader(header) {
+      return String(header).trim().toLowerCase().replace(/[\s_\-/%()（）]/g, "");
+    }
+
+    function headerLookup() {
+      const aliases = {
+        year: ["year", "年份", "年度"],
+        revenue: ["revenue", "sales", "營收", "收入"],
+        netIncome: ["netincome", "netprofit", "earnings", "淨利", "稅後淨利"],
+        ocf: ["ocf", "operatingcashflow", "cashfromoperations", "營業現金流", "營運現金流"],
+        capex: ["capex", "capitalexpenditure", "capitalexpenditures", "資本支出"],
+        freeCashFlow: ["fcf", "freecashflow", "自由現金流"],
+        operatingMargin: ["operatingmargin", "opmargin", "營業利益率", "營業利潤率"],
+        roic: ["roic", "投入資本報酬率"],
+        debt: ["debt", "totaldebt", "longtermdebt", "負債", "長期負債"],
+        shares: ["shares", "sharesoutstanding", "流通股數", "在外股數"],
+        eps: ["eps", "每股盈餘"],
+        dividend: ["dividend", "dividends", "股利", "現金股利"],
+        buyback: ["buyback", "repurchase", "sharerepurchase", "股票回購", "庫藏股"],
+        debtReduction: ["debtreduction", "debtrepayment", "repaymentofdebt", "還債", "償還債務"]
+      };
+      const lookup = {};
+      Object.entries(aliases).forEach(([field, names]) => {
+        names.forEach((name) => {
+          lookup[normalizeHeader(name)] = field;
+        });
+      });
+      return lookup;
+    }
+
+    function importCsv(text) {
+      const lines = text.replace(/\r/g, "").split("\n").filter((line) => line.trim());
+      if (lines.length < 2) {
+        throw new Error("CSV 至少需要標題列與一列資料。");
+      }
+      const lookup = headerLookup();
+      const headers = parseCsvLine(lines[0]).map((header) => lookup[normalizeHeader(header)] || null);
+      const rows = [];
+      for (const line of lines.slice(1)) {
+        const values = parseCsvLine(line);
+        const row = blankRow(new Date().getFullYear());
+        let importedFcf = null;
+        headers.forEach((field, index) => {
+          if (!field) return;
+          const value = parseNumber(values[index], 0);
+          if (field === "freeCashFlow") {
+            importedFcf = value;
+          } else {
+            row[field] = value;
+          }
+        });
+        if (!Number.isFinite(row.year)) continue;
+        if (importedFcf !== null) {
+          if (!row.capex && row.ocf) {
+            row.capex = Math.max(0, row.ocf - importedFcf);
+          } else if (!row.ocf && row.capex) {
+            row.ocf = importedFcf + Math.abs(row.capex);
+          }
+        }
+        if (Math.abs(row.operatingMargin) <= 1 && row.operatingMargin !== 0) {
+          row.operatingMargin *= 100;
+        }
+        if (Math.abs(row.roic) <= 1 && row.roic !== 0) {
+          row.roic *= 100;
+        }
+        rows.push(cleanRow(row));
+      }
+      if (!rows.length) {
+        throw new Error("沒有找到可匯入的年度資料。");
+      }
+      state.presetKey = PRESET_CUSTOM_KEY;
+      state.rows = rows;
+      selectedYear = latestRow()?.year || rows[rows.length - 1].year;
+      renderAll({ table: true, sankeyInputs: true });
+      scheduleAutosave();
+      setStatus(`已匯入 ${rows.length} 年 CSV 資料。`, "good");
+    }
+
+    function syncCompanyFromInputs() {
+      markCustom();
+      state.company.name = els.companyName.value.trim();
+      state.company.ticker = els.ticker.value.trim();
+      state.company.unit = els.unit.value.trim();
+      state.company.note = els.dataNote.value.trim();
+    }
+
+    function bindEvents() {
+      els.companyPresetSelect.addEventListener("change", () => {
+        loadPreset(els.companyPresetSelect.value);
+      });
+
+      [els.companyName, els.ticker, els.unit, els.dataNote].forEach((input) => {
+        input.addEventListener("input", () => {
+          syncCompanyFromInputs();
+          renderSummaryCards();
+          renderSankey();
+          scheduleAutosave();
+        });
+      });
+
+      document.getElementById("saveLocalButton").addEventListener("click", () => saveLocal(true));
+      document.getElementById("exportJsonButton").addEventListener("click", exportJson);
+      document.getElementById("downloadCsvTemplateButton").addEventListener("click", downloadCsvTemplate);
+      document.getElementById("loadDemoButton").addEventListener("click", () => {
+        loadPreset(PRESET_DEMO_KEY);
+      });
+
+      document.getElementById("addYearButton").addEventListener("click", () => {
+        markCustom();
+        const rows = getRowsSorted();
+        const last = rows[rows.length - 1];
+        const newYear = last ? Number(last.year) + 1 : new Date().getFullYear();
+        const row = blankRow(newYear);
+        if (last) {
+          row.operatingMargin = last.operatingMargin;
+          row.roic = last.roic;
+        }
+        state.rows.push(row);
+        selectedYear = newYear;
+        renderAll({ table: true, sankeyInputs: true });
+        scheduleAutosave();
+      });
+
+      els.financialTableBody.addEventListener("input", (event) => {
+        const input = event.target.closest("input[data-id][data-field]");
+        if (!input) return;
+        const row = state.rows.find((item) => item.id === input.dataset.id);
+        if (!row) return;
+        markCustom();
+        const field = input.dataset.field;
+        if (field === "year") {
+          row.year = Math.trunc(parseNumber(input.value, row.year));
+          selectedYear = row.year;
+          renderAll({ table: true, sankeyInputs: true });
+        } else {
+          row[field] = parseNumber(input.value, 0);
+          if (field === "capex") row.capex = Math.abs(row.capex);
+          if (["dividend", "buyback", "debtReduction", "debt", "shares"].includes(field)) {
+            row[field] = Math.max(0, row[field]);
+          }
+          updateComputedCells(row);
+          const affectsAllocation = String(row.year) === String(selectedYear) && ["dividend", "buyback", "debtReduction"].includes(field);
+          renderAll({ table: false, sankeyInputs: affectsAllocation });
+        }
+        scheduleAutosave();
+      });
+
+      els.financialTableBody.addEventListener("click", (event) => {
+        const button = event.target.closest("button[data-action='delete-row']");
+        if (!button) return;
+        if (state.rows.length <= 1) {
+          alert("至少需要保留一列年度資料。");
+          return;
+        }
+        markCustom();
+        state.rows = state.rows.filter((row) => row.id !== button.dataset.id);
+        selectedYear = latestRow()?.year || new Date().getFullYear();
+        renderAll({ table: true, sankeyInputs: true });
+        scheduleAutosave();
+      });
+
+      els.sankeyYear.addEventListener("change", () => {
+        selectedYear = els.sankeyYear.value;
+        renderAllocationInputs();
+        renderSankey();
+      });
+
+      [
+        [els.allocDividend, "dividend"],
+        [els.allocBuyback, "buyback"],
+        [els.allocDebtReduction, "debtReduction"]
+      ].forEach(([input, field]) => {
+        input.addEventListener("input", () => {
+          const row = selectedRow();
+          if (!row) return;
+          markCustom();
+          row[field] = Math.max(0, parseNumber(input.value, 0));
+          const tableInput = document.querySelector(`input[data-id="${CSS.escape(row.id)}"][data-field="${field}"]`);
+          if (tableInput) tableInput.value = row[field];
+          renderSankey();
+          scheduleAutosave();
+        });
+      });
+
+      document.getElementById("csvInput").addEventListener("change", async (event) => {
+        const file = event.target.files?.[0];
+        if (!file) return;
+        try {
+          const text = await file.text();
+          importCsv(text);
+        } catch (error) {
+          setStatus(error.message || "CSV 匯入失敗。", "warn");
+        } finally {
+          event.target.value = "";
+        }
+      });
+    }
+
+    bindEvents();
+    renderAll({ company: true, table: true, sankeyInputs: true });
+    setStatus("可用預載公司選單切換企業，也可直接改成自訂資料。", "good");
+  </script>
+</body>
+</html>
